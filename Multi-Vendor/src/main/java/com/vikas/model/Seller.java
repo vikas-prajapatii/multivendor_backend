@@ -27,7 +27,7 @@ public class Seller {
     @Embedded
     private BankDetails bankDetail = new BankDetails();
     @OneToOne(cascade = CascadeType.ALL)
-    private Add pickupAddress = new Add();
+    private Address pickupAddress = new Address();
     private String GSTIN;
     private USER_ROLE role = USER_ROLE.ROLE_SELLER;
     private boolean isEmailVerified = false;

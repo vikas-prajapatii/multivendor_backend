@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Table(name ="orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,7 +29,7 @@ public class Order {
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @ManyToOne
-    private Add shippingAddress;
+    private Address shippingAddress;
     @Embedded
     private PaymentDetails paymentDetails = new PaymentDetails();
 

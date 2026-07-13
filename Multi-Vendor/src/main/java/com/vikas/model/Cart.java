@@ -14,12 +14,12 @@ import java.util.Set;
 @EqualsAndHashCode
 public class Cart {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @OneToOne
     private User user;
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartItem> cartItem = new HashSet<>();
+    private Set<CartItem> cartItems = new HashSet<>();
 
     private double totalSellingPrice;
     private int totalItem;
@@ -28,7 +28,7 @@ public class Cart {
 
     private int discount;
 
-    private String CouponCode;
+    private String couponCode;
 
 
 }

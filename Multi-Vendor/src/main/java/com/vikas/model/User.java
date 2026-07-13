@@ -15,6 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,7 +28,7 @@ public class User {
     private String phoneNumber;
     private USER_ROLE role  = USER_ROLE.ROLE_CUSTOMER;
     @OneToMany
-    private Set<Add> addresses = new HashSet<>();
+    private Set<Address> addresses = new HashSet<>();
     @ManyToMany
     @JsonIgnore
     private Set<Coupon> usedCoupons = new HashSet<>();
