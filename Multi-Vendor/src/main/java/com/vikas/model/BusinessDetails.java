@@ -10,6 +10,4 @@ public class BusinessDetails {
     private String businessAddress;
     private String logo;
     private String banner;
-
-
 }

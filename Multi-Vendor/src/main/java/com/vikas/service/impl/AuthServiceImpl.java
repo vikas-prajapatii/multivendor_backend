@@ -3,9 +3,11 @@ package com.vikas.service.impl;
 import com.vikas.config.JwtProvider;
 import com.vikas.domain.USER_ROLE;
 import com.vikas.model.Cart;
+import com.vikas.model.Seller;
 import com.vikas.model.User;
 import com.vikas.model.VerificationCode;
 import com.vikas.repository.CartRepository;
+import com.vikas.repository.SellerRepository;
 import com.vikas.repository.UserRepository;
 import com.vikas.repository.VerificationCodeRepository;
 import com.vikas.request.LoginRequest;
@@ -33,7 +35,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private static final String SIGNING_PREFIX = "signing_";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,18 +43,32 @@ public class AuthServiceImpl implements AuthService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final EmailService emailService;
     private final CustomUserServiceImpl customUserServiceImpl;
+    private final SellerRepository sellerRepository;
+
+    private static final String SIGNING_PREFIX = "signing_";
 
     @Override
-    public void sentLoginOtp(String email) throws Exception {
-
+    public void sentLoginOtp(String email, USER_ROLE role) throws Exception {
+        String SIGNING_PREFIX = "signing_";
+//        String SELLER_PREFIX = "seller_";
         if (email.startsWith(SIGNING_PREFIX)) {
             email = email.substring(SIGNING_PREFIX.length());
+         if(role.equals(USER_ROLE.ROLE_SELLER)){
+             Seller seller  = sellerRepository.findByEmail(email);
 
-            User user = userRepository.findByEmail(email);
+             if (seller== null) {
+                 throw new Exception("seller does not exist with the provided email.");
+             }
+         }
+           else{
+             System.out.println("email"+email);
+             User user = userRepository.findByEmail(email);
+             if(user == null) {
+                 throw new Exception("user  does not exist with the provided email.");
+             }
+         }
 
-            if (user == null) {
-                throw new Exception("User does not exist with the provided email.");
-            }
+
         }
 
         VerificationCode existingCode = verificationCodeRepository.findByEmail(email);
@@ -167,18 +182,34 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Authentication authenticate(String username, String otp) {
+
+        String actualEmail = username;
+
+        if (username.startsWith("seller_")) {
+            actualEmail = username.substring("seller_".length());
+        }
+
         UserDetails userDetails = customUserServiceImpl.loadUserByUsername(username);
-        if(userDetails == null){
+
+        if (userDetails == null) {
             throw new BadCredentialsException("Invalid username");
         }
 
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(username);
-        if(verificationCode == null || !verificationCode.getOtp().equals(otp)){
+        VerificationCode verificationCode =
+                verificationCodeRepository.findByEmail(actualEmail);
+
+        if (verificationCode == null) {
+            throw new BadCredentialsException("OTP not found");
+        }
+
+        if (!verificationCode.getOtp().equals(otp)) {
             throw new BadCredentialsException("Invalid otp");
         }
+
         return new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
-                userDetails.getAuthorities());
+                userDetails.getAuthorities()
+        );
     }
 }

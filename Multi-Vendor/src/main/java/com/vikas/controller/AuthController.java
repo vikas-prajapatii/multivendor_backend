@@ -4,6 +4,7 @@ import com.vikas.domain.USER_ROLE;
 import com.vikas.model.User;
 import com.vikas.model.VerificationCode;
 import com.vikas.repository.UserRepository;
+import com.vikas.request.LoginOtpRequest;
 import com.vikas.request.LoginRequest;
 import com.vikas.response.ApiResponse;
 import com.vikas.response.AuthResponse;
@@ -37,15 +38,15 @@ public class AuthController {
     }
 
     @PostMapping("/sent/login-signup-otp")
-    public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody VerificationCode req) throws Exception {
-        authService.sentLoginOtp(req.getEmail());
+    public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody LoginOtpRequest req) throws Exception {
+        authService.sentLoginOtp(req.getEmail(), req.getRole());
 
-        ApiResponse apiResponse = new ApiResponse();
+        ApiResponse res = new ApiResponse();
 
-       apiResponse.setMessage("otp sent successfully");
+       res.setMessage("otp sent successfully");
 
 
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.ok(res);
 
     }
 

@@ -8,4 +8,5 @@ public class BankDetails {
     private String bankAccountHolderName;
     private String ifscCode;
 
+
 }

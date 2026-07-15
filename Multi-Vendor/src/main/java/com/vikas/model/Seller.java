@@ -9,12 +9,11 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 public class Seller {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String sellerName;
 
@@ -25,8 +24,9 @@ public class Seller {
     @Embedded
     private BusinessDetails businessDetails = new BusinessDetails();
     @Embedded
-    private BankDetails bankDetail = new BankDetails();
+    private BankDetails bankDetails = new BankDetails();
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "pickup_address_id")
     private Address pickupAddress = new Address();
     private String GSTIN;
     private USER_ROLE role = USER_ROLE.ROLE_SELLER;

@@ -15,12 +15,12 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String title;
     private String description;
-    private String mrpPrice;
-    private String sellingPrice;
-    private String discountPrice;
+    private double mrpPrice;
+    private double sellingPrice;
+    private double discountPercentage;
     private String color;
     @ElementCollection
     private List<String> images = new ArrayList<>();
@@ -35,7 +35,7 @@ public class Product {
 
     private LocalDateTime createdAt;
 
-    private String sizes;
+    private String size;
 
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> review = new ArrayList<>();

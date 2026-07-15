@@ -39,4 +39,5 @@ public class EmailService {
             throw new MailSendException("Failed to send email");
         }
     }
+
 }
