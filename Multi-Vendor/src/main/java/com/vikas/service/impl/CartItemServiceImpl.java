@@ -21,11 +21,11 @@ public class CartItemServiceImpl implements CartItemService {
             item.setQuantity(cartItem.getQuantity());
 
             item.setMrpPrice(
-                    item.getQuantity() * item.getProduct().getMrpPrice()
+                    (int) (item.getQuantity() * item.getProduct().getMrpPrice())
             );
 
             item.setSellingPrice(
-                    item.getQuantity() * item.getProduct().getSellingPrice()
+                    (int) (item.getQuantity() * item.getProduct().getSellingPrice())
             );
 
             return cartItemRepository.save(item);

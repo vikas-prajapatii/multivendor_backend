@@ -1,4 +1,4 @@
-package com.vikas.model;
+package com.vikas.domain;
 
 public enum OrderStatus {
     PENDING,

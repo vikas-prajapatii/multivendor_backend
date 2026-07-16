@@ -4,6 +4,7 @@ import com.vikas.config.JwtProvider;
 import com.vikas.domain.AccountStatus;
 import com.vikas.exception.SellerException;
 import com.vikas.model.Seller;
+import com.vikas.model.SellerReports;
 import com.vikas.model.VerificationCode;
 import com.vikas.repository.SellerRepository;
 import com.vikas.repository.VerificationCodeRepository;
@@ -12,6 +13,7 @@ import com.vikas.response.ApiResponse;
 import com.vikas.response.AuthResponse;
 import com.vikas.service.AuthService;
 import com.vikas.service.EmailService;
+import com.vikas.service.SellerReportService;
 import com.vikas.service.SellerService;
 import com.vikas.util.OtpUtil;
 import jakarta.mail.MessagingException;
@@ -33,7 +35,7 @@ public class SellerController {
     private final EmailService emailService;
     private final SellerRepository sellerRepository;
     private final JwtProvider jwtProvider;
-
+    private final SellerReportService sellerReportService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginSeller(
@@ -111,7 +113,22 @@ public class SellerController {
         Seller seller = sellerService.getSellerProfile(jwt);
 
         return new ResponseEntity<>(seller, HttpStatus.OK);
+
     }
+
+    @GetMapping("/report")
+    public ResponseEntity<SellerReports> getSellerReport(
+
+            @RequestHeader("Authorization") String jwt
+
+    ) throws Exception {
+          Seller seller = sellerService.getSellerProfile(jwt);
+        SellerReports report = sellerReportService.getSellerReports(seller);
+
+        return new ResponseEntity<>(report, HttpStatus.OK);
+    }
+
+
     @GetMapping
     public ResponseEntity<List<Seller>> getAllSellers(
             @RequestParam(required = false) AccountStatus status) {

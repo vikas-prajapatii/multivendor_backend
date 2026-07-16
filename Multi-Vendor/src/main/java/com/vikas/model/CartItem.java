@@ -23,8 +23,8 @@ public class CartItem {
     private String size;
     private int quantity = 1;
 
-    private double mrpPrice;
-    private double sellingPrice;
+    private int mrpPrice;
+    private int sellingPrice;
     private Long userId;
 
 }

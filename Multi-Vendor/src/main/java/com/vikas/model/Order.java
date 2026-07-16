@@ -1,5 +1,6 @@
 package com.vikas.model;
 
+import com.vikas.domain.OrderStatus;
 import com.vikas.domain.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;

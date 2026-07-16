@@ -32,13 +32,13 @@ public class CartServiceImpl implements CartService {
             cartItem.setSize(size);
 
             double totalPrice = quantity * product.getSellingPrice();
-            cartItem.setSellingPrice(totalPrice);
-
+            cartItem.setSellingPrice((int) totalPrice);
+            cartItem.setMrpPrice((int) (quantity* product.getMrpPrice()));
             cart.getCartItems().add(cartItem);
             cartItem.setCart(cart);
 
             return cartItemRepository.save(cartItem);
-        }
+        } 
 
         return isPresent;
     }
@@ -62,12 +62,12 @@ public class CartServiceImpl implements CartService {
         cart.setTotalSellingPrice(totalPrice);
         cart.setDiscount(calculateDiscountPercentage(totalPrice, totalDiscountPrice));
         cart.setTotalItem(totalItem);
-        return null;
+        return cart;
     }
 
     private int calculateDiscountPercentage(int mrpPrice, int sellingPrice) {
         if (mrpPrice <= 0) {
-            throw new IllegalArgumentException("MrpPrice must be greater than 0");
+           return 0;
         }
         double discount = mrpPrice - sellingPrice;
         double discountPercentage = (discount / mrpPrice) * 100;
