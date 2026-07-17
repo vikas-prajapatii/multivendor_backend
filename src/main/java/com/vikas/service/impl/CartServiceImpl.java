@@ -59,9 +59,8 @@ public class CartServiceImpl implements CartService {
 
         cart.setTotalMrpPrice(totalPrice);
         cart.setTotalItem(totalItem);
-        cart.setTotalSellingPrice(totalPrice);
+        cart.setTotalSellingPrice(totalDiscountPrice);
         cart.setDiscount(calculateDiscountPercentage(totalPrice, totalDiscountPrice));
-        cart.setTotalItem(totalItem);
         return cart;
     }
 

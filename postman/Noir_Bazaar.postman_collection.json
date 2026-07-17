@@ -1,0 +1,514 @@
+{
+  "info": {
+    "name": "Noir Bazaar E-Commerce API",
+    "description": "Standardized Postman Collection for testing all active endpoints in the Multi-Vendor Backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01. Connection Check",
+      "item": [
+        {
+          "name": "Get Welcome Message",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02. Customer Authentication",
+      "item": [
+        {
+          "name": "Send Customer OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"signing_customer@example.com\",\n  \"role\": \"ROLE_CUSTOMER\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/sent/login-signup-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["auth", "sent", "login-signup-otp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Customer Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"otp\": \"123456\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/signup",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["auth", "signup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Customer Login (Signing)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.jwtToken) {",
+                  "    pm.globals.set(\"customer_jwt\", jsonData.jwtToken);",
+                  "}"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/signing",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["auth", "signing"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Customer Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/users/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["users", "profile"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03. Seller Management",
+      "item": [
+        {
+          "name": "Register New Seller",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sellerName\": \"Elite Menswear\",\n  \"mobile\": \"9876543210\",\n  \"email\": \"seller@example.com\",\n  \"password\": \"temporaryPassword123\",\n  \"GSTIN\": \"GSTIN123456789A\",\n  \"bankDetails\": {\n    \"bankAccountHolderName\": \"Jane Doe\",\n    \"bankAccountNumber\": \"9876543210001\",\n    \"ifscCode\": \"SBIN0001234\"\n  },\n  \"businessDetails\": {\n    \"businessName\": \"Elite Apparel Store\"\n  },\n  \"pickupAddress\": {\n    \"address\": \"101 Fashion Street, Suite A\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"pinCode\": \"400001\",\n    \"phoneNumber\": \"9876543210\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/sellers",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["sellers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Seller Email",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/sellers/verify/123456",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["sellers", "verify", "123456"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Seller Login OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"signing_seller@example.com\",\n  \"role\": \"ROLE_SELLER\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/sent/login-signup-otp",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["auth", "sent", "login-signup-otp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Seller Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.jwtToken) {",
+                  "    pm.globals.set(\"seller_jwt\", jsonData.jwtToken);",
+                  "}"
+                ],
+                "type": "javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"seller@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/sellers/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["sellers", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Seller Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{seller_jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/sellers/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["sellers", "profile"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04. Public Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/product?category=t_shirt&color=black&size=M&pageNumber=0",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["product"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "t_shirt"
+                },
+                {
+                  "key": "color",
+                  "value": "black"
+                },
+                {
+                  "key": "size",
+                  "value": "M"
+                },
+                {
+                  "key": "pageNumber",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/product/search?query=shirt",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["product", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "shirt"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/product/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["product", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05. Seller Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{seller_jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Retro Denim Jacket\",\n  \"description\": \"Premium organic denim jacket with vintage wash finish\",\n  \"color\": \"Indigo Blue\",\n  \"sellingPrice\": 75,\n  \"mrpPrice\": 120,\n  \"size\": \"L\",\n  \"images\": [\n    \"https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500\"\n  ],\n  \"category\": \"clothing\",\n  \"category2\": \"mens_clothing\",\n  \"category3\": \"jacket\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/sellers/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "sellers", "products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Seller Products List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{seller_jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/sellers/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "sellers", "products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{seller_jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/sellers/products/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "sellers", "products", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06. Cart Operations",
+      "item": [
+        {
+          "name": "Retrieve User Cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/cart",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "cart"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Item to Cart",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": 1,\n  \"size\": \"L\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/cart/add",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "cart", "add"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Cart Item Quantity",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_jwt}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 3\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/cart/item/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "cart", "item", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Item from Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/cart/item/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "cart", "item", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
