@@ -17,7 +17,7 @@ public class GlobalException {
          ErrorDetails errorDetails = new ErrorDetails();
          errorDetails.setError(se.getMessage());
          errorDetails.setDetails(webRequest.getDescription(false));
-         errorDetails.setTimeStamp(LocalDateTime.now());
+         errorDetails.setTimestamp(LocalDateTime.now());
          return new  ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
 
     }
@@ -27,7 +27,7 @@ public class GlobalException {
         ErrorDetails errorDetails = new ErrorDetails();
         errorDetails.setError(se.getMessage());
         errorDetails.setDetails(webRequest.getDescription(false));
-        errorDetails.setTimeStamp(LocalDateTime.now());
+        errorDetails.setTimestamp(LocalDateTime.now());
         return new  ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
 
     }

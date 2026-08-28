@@ -37,8 +37,17 @@ public class Product {
 
     private String size;
 
+    private int quantity;
+
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> review = new ArrayList<>();
 
+    public String getSizes() {
+        return size;
+    }
+
+    public int getDiscountPercent() {
+        return (int) discountPercentage;
+    }
 
 }

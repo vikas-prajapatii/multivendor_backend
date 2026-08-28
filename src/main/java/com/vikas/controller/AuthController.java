@@ -1,14 +1,12 @@
 package com.vikas.controller;
 
 import com.vikas.domain.USER_ROLE;
-import com.vikas.model.User;
-import com.vikas.model.VerificationCode;
 import com.vikas.repository.UserRepository;
 import com.vikas.request.LoginOtpRequest;
 import com.vikas.request.LoginRequest;
 import com.vikas.response.ApiResponse;
 import com.vikas.response.AuthResponse;
-import com.vikas.response.SignupRequest;
+import com.vikas.request.SignupRequest;
 import com.vikas.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,15 +37,12 @@ public class AuthController {
 
     @PostMapping("/sent/login-signup-otp")
     public ResponseEntity<ApiResponse> sentOtpHandler(@RequestBody LoginOtpRequest req) throws Exception {
-        authService.sentLoginOtp(req.getEmail(), req.getRole());
+        authService.sentLoginOtp(req.getEmail());
 
         ApiResponse res = new ApiResponse();
-
-       res.setMessage("otp sent successfully");
-
+        res.setMessage("otp sent successfully");
 
         return ResponseEntity.ok(res);
-
     }
 
     @PostMapping("/signin")

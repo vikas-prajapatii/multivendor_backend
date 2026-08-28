@@ -1,11 +1,17 @@
 package com.vikas.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddItemRequest {
-    private String size;
-    private int  quantity;
-    private Long productId;
 
+	private Long productId;
+	private String size;
+	private int quantity;
+	private Integer price;
+	
 }

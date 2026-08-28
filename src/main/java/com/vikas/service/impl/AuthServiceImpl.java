@@ -2,20 +2,22 @@ package com.vikas.service.impl;
 
 import com.vikas.config.JwtProvider;
 import com.vikas.domain.USER_ROLE;
+import com.vikas.exception.SellerException;
+import com.vikas.exception.UserException;
 import com.vikas.model.Cart;
-import com.vikas.model.Seller;
 import com.vikas.model.User;
 import com.vikas.model.VerificationCode;
 import com.vikas.repository.CartRepository;
-import com.vikas.repository.SellerRepository;
 import com.vikas.repository.UserRepository;
 import com.vikas.repository.VerificationCodeRepository;
 import com.vikas.request.LoginRequest;
+import com.vikas.request.SignupRequest;
 import com.vikas.response.AuthResponse;
-import com.vikas.response.SignupRequest;
 import com.vikas.service.AuthService;
 import com.vikas.service.EmailService;
+import com.vikas.service.UserService;
 import com.vikas.util.OtpUtil;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,181 +37,136 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final CartRepository cartRepository;
-    private final JwtProvider jwtProvider;
+    private final UserService userService;
     private final VerificationCodeRepository verificationCodeRepository;
     private final EmailService emailService;
-    private final CustomUserServiceImpl customUserServiceImpl;
-    private final SellerRepository sellerRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
+    private final CustomUserServiceImpl customUserDetails;
+    private final CartRepository cartRepository;
 
-    private static final String SIGNING_PREFIX = "signing_";
-
+    // New signature requested by user
     @Override
-    public void sentLoginOtp(String email, USER_ROLE role) throws Exception {
+    public void sentLoginOtp(String email) throws UserException, MessagingException {
         String SIGNING_PREFIX = "signing_";
-//        String SELLER_PREFIX = "seller_";
+
         if (email.startsWith(SIGNING_PREFIX)) {
             email = email.substring(SIGNING_PREFIX.length());
-          if(USER_ROLE.ROLE_SELLER.equals(role)){
-             Seller seller  = sellerRepository.findByEmail(email);
-
-             if (seller== null) {
-                 throw new Exception("seller does not exist with the provided email.");
-             }
-         }
-           else{
-             System.out.println("email"+email);
-             User user = userRepository.findByEmail(email);
-             if(user == null) {
-                 throw new Exception("user  does not exist with the provided email.");
-             }
-         }
-
-
+            try {
+                userService.findUserByEmail(email);
+            } catch (Exception e) {
+                throw new UserException(e.getMessage());
+            }
         }
 
-        VerificationCode existingCode = verificationCodeRepository.findByEmail(email);
+        VerificationCode isExist = verificationCodeRepository.findByEmail(email);
 
-        if (existingCode != null) {
-            verificationCodeRepository.delete(existingCode);
+        if (isExist != null) {
+            verificationCodeRepository.delete(isExist);
         }
 
         String otp = OtpUtil.generateOtp();
 
         VerificationCode verificationCode = new VerificationCode();
-        verificationCode.setEmail(email);
         verificationCode.setOtp(otp);
-
+        verificationCode.setEmail(email);
         verificationCodeRepository.save(verificationCode);
 
-        String subject = "Neural Noir - Login / Signup OTP";
-        String text = "Your OTP is: " + otp + "\n\nDo not share this OTP with anyone.";
-
+        String subject = "Zosh Bazaar Login/Signup Otp";
+        String text = "your login otp is - " + otp;
         emailService.sendVerificationOtpMail(email, otp, subject, text);
     }
 
+    // Single createUser implementation to satisfy both interface versions
     @Override
-    public String createUser(SignupRequest req) throws Exception {
+    public String createUser(SignupRequest req) throws SellerException {
+        String email = req.getEmail();
+        String fullName = req.getFullName();
+        String otp = req.getOtp();
 
-        VerificationCode verificationCode =
-                verificationCodeRepository.findByEmail(req.getEmail());
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(email);
 
-
-        System.out.println("================================");
-        System.out.println("Request Email : " + req.getEmail());
-        System.out.println("Request OTP   : " + req.getOtp());
-
-        if (verificationCode != null) {
-            System.out.println("DB Email      : " + verificationCode.getEmail());
-            System.out.println("DB OTP        : " + verificationCode.getOtp());
-        } else {
-            System.out.println("VerificationCode is NULL");
-        }
-        System.out.println("================================");
-
-        if (verificationCode == null ||
-                !verificationCode.getOtp().equals(req.getOtp())) {
-
-            throw new Exception("Wrong OTP.");
+        if (verificationCode == null || !verificationCode.getOtp().equals(otp)) {
+            throw new SellerException("wrong otp...");
         }
 
-        User user = userRepository.findByEmail(req.getEmail());
+        User user = userRepository.findByEmail(email);
 
         if (user == null) {
-
             User createdUser = new User();
-
-            createdUser.setEmail(req.getEmail());
-            createdUser.setFirstName(req.getFirstName());
-            createdUser.setLastName(req.getLastName());
-            createdUser.setPhoneNumber("8287623613");
-
+            createdUser.setEmail(email);
+            createdUser.setFullName(fullName);
             createdUser.setRole(USER_ROLE.ROLE_CUSTOMER);
+            createdUser.setMobile("9083476123");
+            createdUser.setPassword(passwordEncoder.encode(otp));
 
-            // Agar SignupRequest me password hai to password use karo.
-            // Agar tutorial follow kar rahe ho aur password nahi hai to OTP temporary hai.
-            createdUser.setPassword(passwordEncoder.encode(req.getOtp()));
+            System.out.println(createdUser);
 
             user = userRepository.save(createdUser);
 
             Cart cart = new Cart();
             cart.setUser(user);
-
             cartRepository.save(cart);
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(
-                new SimpleGrantedAuthority(USER_ROLE.ROLE_CUSTOMER.toString())
-        );
+        authorities.add(new SimpleGrantedAuthority(USER_ROLE.ROLE_CUSTOMER.toString()));
 
-        Authentication authentication =
-                new UsernamePasswordAuthenticationToken(
-                        req.getEmail(),
-                        null,
-                        authorities
-                );
-
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-
-
         return jwtProvider.generateToken(authentication);
-
-
     }
 
     @Override
     public AuthResponse signing(LoginRequest req) {
-        String  username = req.getEmail();
+        try {
+            return signin(req);
+        } catch (SellerException e) {
+            throw new BadCredentialsException(e.getMessage());
+        }
+    }
+
+    // New signature requested by user
+    @Override
+    public AuthResponse signin(LoginRequest req) throws SellerException {
+        String username = req.getEmail();
         String otp = req.getOtp();
-        Authentication authentication = authenticate(username,otp);
+
+        System.out.println(username + " ----- " + otp);
+
+        Authentication authentication = authenticate(username, otp);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = jwtProvider.generateToken(authentication);
-
         AuthResponse authResponse = new AuthResponse();
-        authResponse.setJwtToken(token);
-        authResponse.setMessage("Login Success");
 
+        authResponse.setMessage("Login Success");
+        authResponse.setJwt(token);
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
         String roleName = authorities.isEmpty() ? null : authorities.iterator().next().getAuthority();
+
         authResponse.setRole(USER_ROLE.valueOf(roleName));
+
         return authResponse;
     }
 
-    private Authentication authenticate(String username, String otp) {
+    private Authentication authenticate(String username, String otp) throws SellerException {
+        UserDetails userDetails = customUserDetails.loadUserByUsername(username);
 
-        String actualEmail = username;
-
-        if (username.startsWith("seller_")) {
-            actualEmail = username.substring("seller_".length());
-        }
-
-        UserDetails userDetails = customUserServiceImpl.loadUserByUsername(username);
+        System.out.println("sign in userDetails - " + userDetails);
 
         if (userDetails == null) {
-            throw new BadCredentialsException("Invalid username");
+            System.out.println("sign in userDetails - null ");
+            throw new BadCredentialsException("Invalid username or password");
         }
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(username);
 
-        VerificationCode verificationCode =
-                verificationCodeRepository.findByEmail(actualEmail);
-
-        if (verificationCode == null) {
-            throw new BadCredentialsException("OTP not found");
+        if (verificationCode == null || !verificationCode.getOtp().equals(otp)) {
+            throw new SellerException("wrong otp...");
         }
-
-        if (!verificationCode.getOtp().equals(otp)) {
-            throw new BadCredentialsException("Invalid otp");
-        }
-
-        return new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities()
-        );
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

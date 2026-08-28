@@ -1,13 +1,12 @@
-package com.vikas.response;
+package com.vikas.dto;
 
 import lombok.Data;
 
 @Data
-public class SignupRequest {
+public class UserDto {
+    private Long id;
     private String email;
-    private String password;
     private String firstName;
     private String lastName;
-    private String otp;
-
+    private String fullName;
 }

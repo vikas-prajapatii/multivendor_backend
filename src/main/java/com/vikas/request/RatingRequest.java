@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
-	
-	private String email;
-	private String password;
-	private String otp;
+public class RatingRequest {
+
+	private Long productId;
+	private double rating;
 	
 }

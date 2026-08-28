@@ -1,54 +1,67 @@
 package com.vikas.service.impl;
 
+import com.vikas.exception.CartItemException;
+import com.vikas.exception.UserException;
 import com.vikas.model.CartItem;
 import com.vikas.model.User;
 import com.vikas.repository.CartItemRepository;
 import com.vikas.service.CartItemService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-@RequiredArgsConstructor
 public class CartItemServiceImpl implements CartItemService {
-    private final CartItemRepository cartItemRepository;
+	
+	private final CartItemRepository cartItemRepository;
 
-    @Override
-    public CartItem updateCartItem(Long userId, Long id, CartItem cartItem) throws Exception {
-        CartItem item = findCartItemById(id);
-        User cartItemUser = item.getCart().getUser();
-        if (cartItemUser.getId().equals(userId)) {
+	@Autowired
+	public CartItemServiceImpl(CartItemRepository cartItemRepository) {
+		this.cartItemRepository = cartItemRepository;
+	}
 
-            item.setQuantity(cartItem.getQuantity());
+	@Override
+	public CartItem updateCartItem(Long userId, Long id, CartItem cartItem)
+			throws CartItemException, UserException {
+		
+		CartItem item = findCartItemById(id);
+		User cartItemUser = item.getCart().getUser();
+		
+		if (cartItemUser.getId().equals(userId)) {
+			item.setQuantity(cartItem.getQuantity());
+			item.setMrpPrice(item.getQuantity() * (int) item.getProduct().getMrpPrice());
+			item.setSellingPrice(item.getQuantity() * (int) item.getProduct().getSellingPrice());
+			
+			return cartItemRepository.save(item);
+		} else {
+			throw new CartItemException("You can't update another users cart_item");
+		}
+	}
 
-            item.setMrpPrice(
-                    (int) (item.getQuantity() * item.getProduct().getMrpPrice())
-            );
+	@Override
+	public void removeCartItem(Long userId, Long cartItemId)
+			throws CartItemException, UserException {
+		
+		System.out.println("userId- " + userId + " cartItemId " + cartItemId);
+		
+		CartItem cartItem = findCartItemById(cartItemId);
+		User cartItemUser = cartItem.getCart().getUser();
 
-            item.setSellingPrice(
-                    (int) (item.getQuantity() * item.getProduct().getSellingPrice())
-            );
+		if (cartItemUser.getId().equals(userId)) {
+			cartItemRepository.deleteById(cartItem.getId());
+		} else {
+			throw new UserException("you can't remove anothor users item");
+		}
+	}
 
-            return cartItemRepository.save(item);
-        }
-
-        throw new Exception("you can't update this cartItem");
-    }
-
-    @Override
-    public void removeCartItem(Long userId, Long cartItemId) throws Exception {
-        CartItem item = findCartItemById(cartItemId);
-        User cartItemUser = item.getCart().getUser();
-        if (cartItemUser.getId().equals(userId)) {
-            cartItemRepository.delete(item);
-        }
-        else throw new Exception("you can't delete this item");
-    }
-
-    @Override
-    public CartItem findCartItemById(Long id) throws Exception {
-
-
-        return cartItemRepository.findById(id).orElseThrow(()
-        -> new Exception("cart item not found with id "+id)) ;
-    }
+	@Override
+	public CartItem findCartItemById(Long cartItemId) throws CartItemException {
+		Optional<CartItem> opt = cartItemRepository.findById(cartItemId);
+		
+		if (opt.isPresent()) {
+			return opt.get();
+		}
+		throw new CartItemException("cartItem not found with id : " + cartItemId);
+	}
 }

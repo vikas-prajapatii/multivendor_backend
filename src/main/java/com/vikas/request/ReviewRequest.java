@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
+public class ReviewRequest {
 	
-	private String email;
-	private String password;
-	private String otp;
-	
+	private Long productId;
+	private String review;
+
 }

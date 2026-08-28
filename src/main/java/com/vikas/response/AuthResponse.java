@@ -8,5 +8,13 @@ public class AuthResponse {
     private String jwtToken;
     private String message;
     private USER_ROLE role;
+    private boolean status;
 
+    public void setJwt(String jwt) {
+        this.jwtToken = jwt;
+    }
+
+    public String getJwt() {
+        return jwtToken;
+    }
 }

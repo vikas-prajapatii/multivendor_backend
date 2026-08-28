@@ -33,4 +33,27 @@ public class User {
     @JsonIgnore
     private Set<Coupon> usedCoupons = new HashSet<>();
 
+    public String getFullName() {
+        return (firstName != null ? firstName : "") + (lastName != null ? " " + lastName : "");
+    }
+
+    public void setFullName(String fullName) {
+        if (fullName == null) {
+            this.firstName = "";
+            this.lastName = "";
+            return;
+        }
+        String[] parts = fullName.split(" ", 2);
+        this.firstName = parts[0];
+        this.lastName = parts.length > 1 ? parts[1] : "";
+    }
+
+    public void setMobile(String mobile) {
+        this.phoneNumber = mobile;
+    }
+
+    public String getMobile() {
+        return this.phoneNumber;
+    }
+
 }
