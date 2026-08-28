@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 //        String SELLER_PREFIX = "seller_";
         if (email.startsWith(SIGNING_PREFIX)) {
             email = email.substring(SIGNING_PREFIX.length());
-         if(role.equals(USER_ROLE.ROLE_SELLER)){
+          if(USER_ROLE.ROLE_SELLER.equals(role)){
              Seller seller  = sellerRepository.findByEmail(email);
 
              if (seller== null) {

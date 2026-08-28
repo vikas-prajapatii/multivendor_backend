@@ -84,8 +84,8 @@ public class SellerController {
 
         verificationCodeRepository.save(verificationCode);
 
-        String subject = "Zosh Bazaar Email Verification Code";
-        String text = "Welcome to Zosh Bazaar, verify your account using this link ";
+        String subject = "Neural Noir Email Verification Code";
+        String text = "Welcome to Neural Noir, verify your account using this link ";
         String frontend_url = "http://localhost:3000/verify-seller/";
 
         emailService.sendVerificationOtpMail(

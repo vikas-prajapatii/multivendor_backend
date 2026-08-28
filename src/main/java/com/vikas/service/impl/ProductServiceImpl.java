@@ -115,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
             List<Predicate> predicates = new ArrayList<>();
             if(category != null) {
                 Join<Product, Category> categoryJoin = root.join("category");
-                predicates.add(criteriaBuilder.equal(categoryJoin.get("category"), category));
+                predicates.add(criteriaBuilder.equal(categoryJoin.get("categoryId"), category));
             }
            if(colors != null && !colors.isEmpty()) {
                System.out.println("colors: " + colors);
@@ -133,7 +133,7 @@ public class ProductServiceImpl implements ProductService {
                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("sellingPrice"), maxPrice));
            }
            if(minDiscount != null) {
-               predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("discountPrices"),+ minDiscount));
+               predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("discountPercentage"), minDiscount));
            }
            if(stock != null) {
                predicates.add(criteriaBuilder.equal(root.get("stock"), stock));

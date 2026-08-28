@@ -54,7 +54,6 @@ public class AppConfig {
                 cfg.setAllowCredentials(true);
                 cfg.setExposedHeaders(Collections.singletonList("Authorization"));
                 cfg.setMaxAge(3600L);
-
                 return cfg;
             }
         };

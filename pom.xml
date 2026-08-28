@@ -119,6 +119,12 @@
 			<artifactId>stripe-java</artifactId>
 			<version>26.12.0</version>
 		</dependency>
+
+		<!-- Jayway JsonPath -->
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

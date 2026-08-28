@@ -50,11 +50,10 @@ public class AuthController {
 
     }
 
-    @PostMapping("/signing")
+    @PostMapping("/signin")
     public ResponseEntity<AuthResponse> loginHandler(@RequestBody LoginRequest req) throws Exception {
         AuthResponse authResponse =  authService.signing(req);
         return ResponseEntity.ok(authResponse);
-
     }
 }
 
