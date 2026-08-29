@@ -2,7 +2,7 @@ package com.vikas.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,34 +10,27 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender javaMailSender;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
-    public void sendVerificationOtpMail(
-            String userEmail,
-            String otp,
-            String subject,
-            String text) {
+    public void sendVerificationOtpEmail(String userEmail, String otp, String subject, String text) throws MessagingException, MailSendException {
 
         try {
-
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(mimeMessage, "UTF-8");
-
-            helper.setTo(userEmail);
             helper.setSubject(subject);
-            helper.setText(text, true);
-
+            helper.setText(text + otp, true);
+            helper.setTo(userEmail);
             javaMailSender.send(mimeMessage);
-
-        } catch (MessagingException | MailException e) {
-            e.printStackTrace();
+        } catch (MailException e) {
             throw new MailSendException("Failed to send email");
         }
     }
 
+    public void sendVerificationOtpMail(String userEmail, String otp, String subject, String text) throws MessagingException, MailSendException {
+        sendVerificationOtpEmail(userEmail, otp, subject, text);
+    }
 }

@@ -9,7 +9,6 @@ import com.vikas.model.VerificationCode;
 import com.vikas.repository.SellerRepository;
 import com.vikas.repository.VerificationCodeRepository;
 import com.vikas.request.LoginRequest;
-import com.vikas.response.ApiResponse;
 import com.vikas.response.AuthResponse;
 import com.vikas.service.AuthService;
 import com.vikas.service.EmailService;

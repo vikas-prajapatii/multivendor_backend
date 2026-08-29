@@ -7,26 +7,38 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class HomeCategoryServiceImpl implements HomeCategoryService {
+
     private final HomeCategoryRepository homeCategoryRepository;
 
     @Override
-    public HomeCategory createHomeCategory(HomeCategory homeCategory) {
-        return homeCategoryRepository.save(homeCategory);
+    public HomeCategory createCategory(HomeCategory categories) {
+        return homeCategoryRepository.save(categories);
     }
 
     @Override
-    public List<HomeCategory> createCategories(List<HomeCategory> homeCategories) {
-        if(homeCategoryRepository.findAll().isEmpty()){
-            return homeCategoryRepository.saveAll(homeCategories);
+    public List<HomeCategory> createCategories(List<HomeCategory> categories) {
+        if (homeCategoryRepository.findAll().isEmpty()) {
+            return homeCategoryRepository.saveAll(categories);
         }
-        return homeCategoryRepository.findAll() ;
+        return homeCategoryRepository.findAll();
     }
 
     @Override
-    public HomeCategory updateHomeCategory(HomeCategory category, Long id) throws Exception {
+    public List<HomeCategory> getAllCategories() {
+        return homeCategoryRepository.findAll();
+    }
+
+    @Override
+    public List<HomeCategory> getAllHomeCategories() {
+        return getAllCategories();
+    }
+
+    @Override
+    public HomeCategory updateCategory(HomeCategory category, Long id) throws Exception {
         HomeCategory existingCategory = homeCategoryRepository.findById(id)
                 .orElseThrow(() -> new Exception("Category not found"));
         if (category.getImage() != null) {
@@ -37,8 +49,9 @@ public class HomeCategoryServiceImpl implements HomeCategoryService {
         }
         return homeCategoryRepository.save(existingCategory);
     }
+
     @Override
-    public List<HomeCategory> getAllHomeCategories() {
-        return homeCategoryRepository.findAll();
+    public HomeCategory updateHomeCategory(HomeCategory category, Long id) throws Exception {
+        return updateCategory(category, id);
     }
 }

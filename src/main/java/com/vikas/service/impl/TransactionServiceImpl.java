@@ -6,36 +6,52 @@ import com.vikas.model.Transaction;
 import com.vikas.repository.SellerRepository;
 import com.vikas.repository.TransactionRepository;
 import com.vikas.service.TransactionService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
+
     private final TransactionRepository transactionRepository;
     private final SellerRepository sellerRepository;
+
+    @Autowired
+    public TransactionServiceImpl(TransactionRepository transactionRepository,
+                                  SellerRepository sellerRepository
+    ) {
+        this.transactionRepository = transactionRepository;
+        this.sellerRepository = sellerRepository;
+    }
 
     @Override
     public Transaction createTransaction(Order order) {
         Seller seller = sellerRepository.findById(order.getSellerId()).get();
         Transaction transaction = new Transaction();
-        transaction.setSeller(seller);
-        transaction.setOrder(order);
         transaction.setCustomer(order.getUser());
-
+        transaction.setOrder(order);
+        transaction.setSeller(seller);
         return transactionRepository.save(transaction);
     }
 
     @Override
-    public List<Transaction> getTransactionBySellerId(Seller seller) {
+    public List<Transaction> getTransactionBySeller(Seller seller) {
         return transactionRepository.findBySellerId(seller.getId());
     }
 
     @Override
-    public List<Transaction> getAllTransaction() {
-        return transactionRepository.findAll();
+    public List<Transaction> getTransactionBySellerId(Seller seller) {
+        return getTransactionBySeller(seller);
+    }
 
+    @Override
+    public List<Transaction> getAllTransactions() {
+        return transactionRepository.findAll();
+    }
+
+    @Override
+    public List<Transaction> getAllTransaction() {
+        return getAllTransactions();
     }
 }

@@ -2,7 +2,6 @@ package com.vikas.controller;
 
 import com.vikas.model.Seller;
 import com.vikas.model.Transaction;
-import com.vikas.repository.TransactionRepository;
 import com.vikas.service.SellerService;
 import com.vikas.service.TransactionService;
 import lombok.RequiredArgsConstructor;
