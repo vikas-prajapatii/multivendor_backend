@@ -50,4 +50,8 @@ public class Product {
         return (int) discountPercentage;
     }
 
+    public List<Review> getReviews() {
+        return review;
+    }
+
 }

@@ -89,17 +89,9 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Coupon> findAllCoupons() {
         return getAllCoupons();
     }
 
-    @Override
-    public Coupon getCouponById(Long couponId) {
-        return couponRepository.findById(couponId).orElse(null);
-    }
-
-    @Override
-    public Coupon findCouponById(Long id) throws Exception {
-        return couponRepository.findById(id).orElseThrow(() -> new Exception("coupon not found"));
-    }
 }
