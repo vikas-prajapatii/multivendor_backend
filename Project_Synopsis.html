@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project Synopsis - Multi-Vendor E-Commerce Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+    body {
+      background-color: #f6f8fa;
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    }
+    .markdown-body {
+      box-sizing: border-box;
+      min-width: 200px;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 45px;
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      background: #fbfbfb;
+      padding: 16px;
+      border-radius: 6px;
+      margin: 20px 0;
+      border: 1px solid #e1e4e8;
+    }
+    .print-bar {
+      position: fixed;
+      top: 15px;
+      right: 25px;
+      background: #2ea44f;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 9999;
+      border: none;
+      font-size: 14px;
+    }
+    .print-bar:hover {
+      background: #2c974b;
+    }
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .markdown-body {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .print-bar {
+        display: none;
+      }
+      a {
+        text-decoration: none;
+      }
+      pre, blockquote, table, .mermaid {
+        page-break-inside: avoid;
+      }
+      h1, h2, h3 {
+        page-break-after: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-bar" onclick="window.print()">🖨️ Save as PDF (Ctrl + P)</button>
+  <article class="markdown-body">
+    <h1>Multi-Vendor E-Commerce Platform with AI Conversational Commerce</h1>
+<h3>Enterprise Multi-Merchant Marketplace</h3>
+<p><a href="https://www.oracle.com/java/"><img src="https://img.shields.io/badge/Java-21-orange.svg" alt="Java"></a>
+<a href="https://spring.io/projects/spring-boot"><img src="https://img.shields.io/badge/Spring%20Boot-3.x%2F4.x-brightgreen.svg" alt="Spring Boot"></a>
+<a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19-blue.svg" alt="React"></a>
+<a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.8-blue.svg" alt="TypeScript"></a>
+<a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-7.0-purple.svg" alt="Vite"></a>
+<a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-17-blue.svg" alt="PostgreSQL"></a>
+<a href="https://ai.google.dev/"><img src="https://img.shields.io/badge/Google%20Gemini%20AI-Function%20Calling-gold.svg" alt="Google Gemini"></a>
+<a href="https://razorpay.com/"><img src="https://img.shields.io/badge/Razorpay-Enabled-blue.svg" alt="Razorpay"></a>
+<a href="https://stripe.com/"><img src="https://img.shields.io/badge/Stripe-Enabled-blueviolet.svg" alt="Stripe"></a></p>
+<hr>
+<h1>PROJECT SYNOPSIS</h1>
+<h2>Next-Generation Multi-Vendor E-Commerce Platform with AI-Driven Conversational Commerce</h2>
+<hr>
+<h3><strong>Document Information</strong></h3>
+<ul>
+<li><strong>Project Title:</strong> Multi-Vendor E-Commerce &amp; Marketplace Application</li>
+<li><strong>Author/Developer:</strong> Vikas Prajapati</li>
+<li><strong>Document Type:</strong> Comprehensive Technical Project Synopsis &amp; Architecture Document</li>
+<li><strong>Architecture Style:</strong> Decoupled Client-Server (RESTful Web Services &amp; Single Page Application)</li>
+<li><strong>Version:</strong> 1.0.0</li>
+</ul>
+<hr>
+<h2>1. Executive Summary &amp; Abstract</h2>
+<p>The <strong>Multi-Vendor E-Commerce Platform</strong> is an enterprise-grade digital marketplace designed to bridge independent merchants (sellers) and consumers (buyers) within a unified, high-performance ecosystem. Built upon a modern, resilient technology stack featuring <strong>Spring Boot (Java 21)</strong> on the backend and <strong>React 19 with TypeScript and Vite</strong> on the frontend, the platform facilitates end-to-end e-commerce operations—from multi-tier catalog browsing and dynamic cart calculations to secure multi-gateway transactions and merchant payouts.</p>
+<p>Distinguishing features of the platform include:</p>
+<ol>
+<li><strong>Multi-Vendor Order Splitting:</strong> An automated orchestration mechanism where a customer&#39;s unified shopping cart containing items from multiple distinct vendors is atomically broken down into discrete sub-orders per vendor upon checkout.</li>
+<li><strong>Dual Payment Gateway Integration:</strong> Seamless support for both domestic and international transactions using <strong>Razorpay</strong> and <strong>Stripe</strong>, complete with automated payment order tracking.</li>
+<li><strong>AI-Powered Conversational Assistant:</strong> Integration of <strong>Google Gemini Large Language Model (LLM)</strong> equipped with <strong>Function Calling capabilities</strong>, allowing users to query cart contents, order delivery history, and live product specifications through natural language.</li>
+<li><strong>Role-Based Access Control (RBAC):</strong> Granular authorization isolating Customers, Sellers, and Platform Administrators using stateless <strong>JSON Web Tokens (JWT)</strong> and Spring Security.</li>
+</ol>
+<hr>
+<h2>2. Problem Statement &amp; Motivation</h2>
+<p>Traditional single-seller e-commerce websites exhibit significant structural limitations:</p>
+<ul>
+<li><strong>Scalability &amp; Catalog Diversity:</strong> Single-merchant systems struggle to scale product variety and geographic reach without enormous warehousing overhead.</li>
+<li><strong>Merchant Inclusion:</strong> Local artisans, textile producers, and small retailers lack affordable, scalable technological platforms to showcase their goods alongside established brands.</li>
+<li><strong>Order Complexity:</strong> Handling carts with products from diverse physical locations requires sophisticated logistics splitting, localized inventory tracking, and split-commission payout calculations.</li>
+<li><strong>Customer Engagement Bottlenecks:</strong> Traditional search-and-filter interfaces can overwhelm users. Without intelligent conversational guidance, finding nuanced products (e.g., specific regional Indian ethnic weaves like Kanjeevaram, Banarasi, or Paithani sarees) results in abandoned shopping sessions.</li>
+</ul>
+<p>This project addresses these challenges by delivering an open multi-vendor marketplace with self-service vendor onboarding, automated financial tracking, role-segmented management dashboards, and an integrated AI shopping assistant.</p>
+<hr>
+<h2>3. Project Objectives</h2>
+<ul>
+<li><strong>Democratize Vendor Onboarding:</strong> Enable independent merchants to register, configure business credentials (GSTIN, bank details), and list catalog items with customized pricing, sizing, and media galleries.</li>
+<li><strong>Deliver Unified Customer Experience:</strong> Provide customers with smooth category navigation across 3-tier deep taxonomies, real-time inventory checks, instant coupon application, and multi-address management.</li>
+<li><strong>Ensure Financial Integrity &amp; Security:</strong> Implement atomic transactions, tamper-proof payment verification, and encrypted credentials using industry-standard cryptography.</li>
+<li><strong>Incorporate Artificial Intelligence:</strong> Leverage Gemini Generative AI to transition from passive product searching to proactive, contextual conversational commerce.</li>
+<li><strong>Maintain Modular, Maintainable Code:</strong> Adopt Domain-Driven Design principles, reactive state management (Redux Toolkit), and clean REST API contracts.</li>
+</ul>
+<hr>
+<h2>4. System Architecture &amp; High-Level Design</h2>
+<p>The system adheres to a <strong>Decoupled 3-Tier Layered Architecture</strong>:</p>
+<ol>
+<li><strong>Presentation Layer (Client):</strong> Single Page Application (SPA) powered by React 19, TypeScript, Material-UI (MUI), and Tailwind CSS, managed by Redux Toolkit.</li>
+<li><strong>Application &amp; Business Logic Layer (Server):</strong> Stateless Spring Boot 3/4 REST API microservice architecture utilizing Spring Security, Spring Data JPA, and Spring Mail.</li>
+<li><strong>Data Layer (Storage &amp; External Services):</strong> PostgreSQL relational database, Cloudinary CDN for optimized media delivery, and external Payment &amp; AI APIs.</li>
+</ol>
+<h3>Architecture Diagram</h3>
+<div class="mermaid">
+flowchart TD
+    subgraph ClientLayer ["Client Layer (React 19 + TypeScript + Vite)"]
+        UI_Customer["Customer Storefront\n(Home, Catalog, Cart, Checkout)"]
+        UI_Seller["Seller Portal\n(Products, Orders, Payouts, Reports)"]
+        UI_Admin["Admin Dashboard\n(Categories, Deals, Verification, Coupons)"]
+        ReduxStore["Redux Toolkit Store\n(State, Thunks, Cached State)"]
+        UI_Customer --> ReduxStore
+        UI_Seller --> ReduxStore
+        UI_Admin --> ReduxStore
+    end
+
+    subgraph APILayer ["API Gateway & Security (Spring Boot 5454)"]
+        JWTFilter["JwtTokenValidator\n(Stateless Bearer Interceptor)"]
+        SecurityConfig["Spring Security (RBAC)\nCustomer / Seller / Admin"]
+        JWTFilter --> SecurityConfig
+    end
+
+    subgraph ServiceLayer ["Core Service Orchestration"]
+        AuthSvc["Auth & OTP Service"]
+        ProductSvc["Product & Catalog Service"]
+        OrderSvc["Order & Fulfillment Service"]
+        CartSvc["Cart & Pricing Engine"]
+        PaymentSvc["Payment Service (Razorpay / Stripe)"]
+        AISvc["Gemini AI Service (Function Calling)"]
+    end
+
+    subgraph DataLayer ["Data & External Providers"]
+        PostgresDB[("PostgreSQL Database\n(vendor_db:5432)")]
+        CloudinaryCDN["Cloudinary Media CDN\n(Image Optimization & Delivery)"]
+        GeminiAPI["Google Gemini LLM API"]
+        PaymentGateways["Payment Gateways\n(Razorpay / Stripe)"]
+        MailServer["SMTP Mail Gateway\n(Gmail TLS:587)"]
+    end
+
+    ReduxStore <==>|HTTP / REST + Bearer Token| APILayer
+    SecurityConfig --> ServiceLayer
+    ServiceLayer <--> PostgresDB
+    ServiceLayer <--> GeminiAPI
+    ServiceLayer <--> PaymentGateways
+    ServiceLayer <--> MailServer
+    UI_Customer -.->|Fetches Assets| CloudinaryCDN
+    UI_Seller -.->|Uploads Media| CloudinaryCDN
+
+</div>
+<hr>
+<h2>5. Key Stakeholders &amp; System Roles</h2>
+<table>
+<thead>
+<tr>
+<th align="left">Role</th>
+<th align="left">Target Entity</th>
+<th align="left">Core Responsibilities &amp; Privileges</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>ROLE_CUSTOMER</strong></td>
+<td align="left">Shopper / End-User</td>
+<td align="left">- Browse, search, filter catalog by categories, colors, discounts, and prices.<br>- Manage cart, apply promotional coupons, save wishlist items.<br>- Add/edit multiple shipping addresses.<br>- Execute checkout via Razorpay or Stripe.<br>- Track order status and post reviews/ratings.<br>- Converse with the Gemini AI assistant.</td>
+</tr>
+<tr>
+<td align="left"><strong>ROLE_SELLER</strong></td>
+<td align="left">Merchant / Vendor</td>
+<td align="left">- Complete multi-step onboarding (Business details, GSTIN, Bank details).<br>- Create, update, and manage product inventory (variants, sizes, prices).<br>- View orders containing their products and update fulfillment lifecycle.<br>- Access revenue metrics, sales reports, and payout histories via Recharts.</td>
+</tr>
+<tr>
+<td align="left"><strong>ROLE_ADMIN</strong></td>
+<td align="left">Platform Master</td>
+<td align="left">- Verify and approve/suspend seller accounts.<br>- Manage multi-level categories (Level 1, Level 2, Level 3).<br>- Curate homepage deal grids, promotional banners, and category showcases.<br>- Generate, activate, and revoke marketplace discount coupons.</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>6. Functional Modules &amp; Subsystems</h2>
+<div class="mermaid">
+graph LR
+    subgraph CoreModules ["Core Marketplace Modules"]
+        M1["1. Auth & Identity"]
+        M2["2. Catalog & Products"]
+        M3["3. Cart & Wishlist"]
+        M4["4. Order & Splitting"]
+        M5["5. Dual Payment Engine"]
+        M6["6. Seller Dashboard & Analytics"]
+        M7["7. Admin Governance"]
+        M8["8. Gemini AI Assistant"]
+    end
+
+</div>
+<h3>6.1. Authentication, Authorization &amp; Identity Management</h3>
+<ul>
+<li><strong>Stateless JWT Security:</strong> Generates short-lived access tokens and refresh tokens upon authentication.</li>
+<li><strong>Two-Factor OTP Verification:</strong> Secure email verification using Spring Mail over SMTP TLS for user login, seller registration, and password resets.</li>
+<li><strong>Role Isolation:</strong> Strict URI security rules ensuring sellers cannot manipulate admin settings and customers cannot access vendor reports.</li>
+</ul>
+<h3>6.2. Multi-Level Category &amp; Product Catalog Subsystem</h3>
+<ul>
+<li><strong>Hierarchical Taxonomy:</strong> 3-tier deep categories:<ul>
+<li><em>Level 1:</em> Main Department (e.g., <code>women</code>, <code>men</code>, <code>home_furniture</code>, <code>electronics</code>)</li>
+<li><em>Level 2:</em> Product Line (e.g., <code>women_clothing</code>, <code>footwear</code>)</li>
+<li><em>Level 3:</em> Specific Category (e.g., <code>women_sarees</code>, <code>women_kurtas</code>, <code>lehenga_choli</code>)</li>
+</ul>
+</li>
+<li><strong>Dynamic Product Filtering:</strong> Backend JPA Specification filtering by category slug, color palette, price brackets, discount percentages, and stock availability.</li>
+<li><strong>Media Management:</strong> Direct-to-Cloudinary image uploading ensuring responsive WebP delivery without overloading backend file systems.</li>
+</ul>
+<h3>6.3. Cart, Pricing &amp; Wishlist Engine</h3>
+<ul>
+<li><strong>Atomic Pricing Calculation:</strong> Real-time summation of Total MRP, Item Discounts, Selling Prices, Coupon Deductions, and Net Payable amounts.</li>
+<li><strong>Coupon Validation Logic:</strong> Checks coupon validity dates, active status, minimum order threshold, and user applicability before applying discounts.</li>
+<li><strong>Wishlist Management:</strong> Persistent user wishlist supporting instant one-click transfer of saved products to the active cart.</li>
+</ul>
+<h3>6.4. Multi-Vendor Order Splitting &amp; Fulfillment</h3>
+<ul>
+<li><strong>Automated Order Decomposition:</strong> When a customer orders 5 items originating from 3 different sellers, the backend creates:<ul>
+<li>A primary <strong>PaymentOrder</strong> consolidating the total monetary amount.</li>
+<li>3 separate <strong>Order</strong> records, each assigned to the respective <code>sellerId</code>.</li>
+</ul>
+</li>
+<li><strong>Fulfillment State Machine:</strong> Independent state tracking per seller:
+$$\text{PENDING} \longrightarrow \text{PLACED} \longrightarrow \text{CONFIRMED} \longrightarrow \text{SHIPPED} \longrightarrow \text{DELIVERED} \quad (\text{or } \text{CANCELLED})$$</li>
+</ul>
+<h3>6.5. Dual Payment Gateway Integration</h3>
+<ul>
+<li><strong>Razorpay Integration:</strong> Creates Razorpay Order instances with exact amounts and receipt IDs, launching the native client checkout modal.</li>
+<li><strong>Stripe Checkout:</strong> Generates hosted Stripe Checkout sessions supporting international credit/debit cards with success and cancellation redirection URLs.</li>
+<li><strong>Transaction Ledger:</strong> Records every successful debit/credit transaction linked to orders, sellers, and customers for audit compliance.</li>
+</ul>
+<h3>6.6. Seller Analytics &amp; Management Dashboard</h3>
+<ul>
+<li><strong>Real-Time KPI Cards:</strong> Displays total revenue, pending orders, completed deliveries, and cancellation rates.</li>
+<li><strong>Visual Analytics:</strong> Interactive sales trends and performance visualization powered by <strong>Recharts</strong>.</li>
+<li><strong>Inventory Tracking:</strong> Low-stock warnings and stock quantity management.</li>
+</ul>
+<h3>6.7. AI Conversational Commerce (Google Gemini LLM)</h3>
+<ul>
+<li><strong>Function Calling Engine:</strong> The backend registers structured JSON function declarations with the Gemini API:<ul>
+<li><code>getUserCart</code>: Fetches real-time shopping cart contents.</li>
+<li><code>getUsersOrder</code>: Retrieves user order history, statuses, and delivery dates.</li>
+<li><code>getProductDetails</code>: Extracts deep product specifications, materials, and prices.</li>
+</ul>
+</li>
+<li><strong>Intelligent Response Generation:</strong> Translates technical database outputs into empathetic, concise, and helpful conversational responses to shoppers.</li>
+</ul>
+<hr>
+<h2>7. Database Architecture &amp; Entity Relationship (ER) Schema</h2>
+<p>The database is deployed on <strong>PostgreSQL (vendor_db)</strong> and managed via <strong>Hibernate ORM</strong>.</p>
+<div class="mermaid">
+erDiagram
+    USER ||--o{ ADDRESS : "has many"
+    USER ||--o| CART : "owns"
+    USER ||--o| WISHLIST : "owns"
+    USER ||--o{ ORDER : "places"
+    USER ||--o{ REVIEW : "writes"
+
+    SELLER ||--|| BUSINESS_DETAILS : "has"
+    SELLER ||--|| BANK_DETAILS : "has"
+    SELLER ||--|| ADDRESS : "pickup address"
+    SELLER ||--o{ PRODUCT : "sells"
+    SELLER ||--o{ ORDER : "fulfills"
+
+    CATEGORY ||--o{ CATEGORY : "parent-child"
+    CATEGORY ||--o{ PRODUCT : "categorizes"
+
+    PRODUCT ||--o{ PRODUCT_IMAGES : "has many"
+    PRODUCT ||--o{ CART_ITEM : "referenced in"
+    PRODUCT ||--o{ ORDER_ITEM : "referenced in"
+    PRODUCT ||--o{ REVIEW : "receives"
+
+    CART ||--o{ CART_ITEM : "contains"
+    ORDER ||--o{ ORDER_ITEM : "contains"
+    ORDER ||--|| ADDRESS : "shipped to"
+    ORDER ||--o| TRANSACTION : "generates"
+
+    PAYMENT_ORDER ||--o{ ORDER : "settles"
+    COUPON ||--o{ USER : "used by"
+
+</div>
+<h3>Key Relational Tables:</h3>
+<ol>
+<li><strong><code>users</code></strong>: Customer credentials, roles, profile image, mobile.</li>
+<li><strong><code>seller</code></strong>: Merchant profile, account verification status, GSTIN.</li>
+<li><strong><code>product</code></strong>: Product catalog attributes, MRP, selling price, quantity, color, category link.</li>
+<li><strong><code>product_images</code></strong>: Multi-image URLs associated with each product.</li>
+<li><strong><code>category</code></strong>: 3-level tree hierarchy with self-referential foreign keys.</li>
+<li><strong><code>cart</code> &amp; <code>cart_item</code></strong>: Temporary shopping session data with dynamic discount rules.</li>
+<li><strong><code>orders</code> &amp; <code>order_item</code></strong>: Persistent order records separated per seller.</li>
+<li><strong><code>payment_order</code></strong>: Master payment gateway tracking record.</li>
+<li><strong><code>coupon</code></strong>: Promotional discount rules and validity constraints.</li>
+<li><strong><code>review</code></strong>: Customer ratings (1-5 stars), text feedback, and reviewer media.</li>
+</ol>
+<hr>
+<h2>8. Technology Stack &amp; Implementation Details</h2>
+<table>
+<thead>
+<tr>
+<th align="left">Layer / Aspect</th>
+<th align="left">Technology</th>
+<th align="left">Version</th>
+<th align="left">Justification / Role</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Backend Framework</strong></td>
+<td align="left"><strong>Spring Boot</strong></td>
+<td align="left">3.x / 4.1.0</td>
+<td align="left">Industry-standard Java enterprise framework providing DI, auto-configuration, and robust REST APIs.</td>
+</tr>
+<tr>
+<td align="left"><strong>Language</strong></td>
+<td align="left"><strong>Java</strong></td>
+<td align="left"><strong>JDK 21</strong></td>
+<td align="left">Modern LTS release offering virtual threads, pattern matching, and superior performance.</td>
+</tr>
+<tr>
+<td align="left"><strong>ORM &amp; Persistence</strong></td>
+<td align="left"><strong>Spring Data JPA / Hibernate</strong></td>
+<td align="left">Latest</td>
+<td align="left">Simplifies complex CRUD operations, entity relationships, and transactional queries.</td>
+</tr>
+<tr>
+<td align="left"><strong>Database</strong></td>
+<td align="left"><strong>PostgreSQL</strong></td>
+<td align="left"><strong>17.x</strong></td>
+<td align="left">Enterprise ACID-compliant relational database capable of handling complex multi-table joins.</td>
+</tr>
+<tr>
+<td align="left"><strong>Security &amp; Auth</strong></td>
+<td align="left"><strong>Spring Security + JJWT</strong></td>
+<td align="left">0.11.1</td>
+<td align="left">Stateless token-based security filter chain with BCrypt password hashing.</td>
+</tr>
+<tr>
+<td align="left"><strong>Frontend Framework</strong></td>
+<td align="left"><strong>React</strong></td>
+<td align="left"><strong>19.1.0</strong></td>
+<td align="left">Declarative component architecture delivering fluid, responsive user interfaces.</td>
+</tr>
+<tr>
+<td align="left"><strong>Language (Client)</strong></td>
+<td align="left"><strong>TypeScript</strong></td>
+<td align="left"><strong>5.8.x</strong></td>
+<td align="left">Strong static typing to prevent runtime bugs across complex e-commerce state models.</td>
+</tr>
+<tr>
+<td align="left"><strong>Build Tool</strong></td>
+<td align="left"><strong>Vite</strong></td>
+<td align="left"><strong>7.0.x</strong></td>
+<td align="left">Ultra-fast build tool and Hot Module Replacement (HMR) for superior developer experience.</td>
+</tr>
+<tr>
+<td align="left"><strong>State Management</strong></td>
+<td align="left"><strong>Redux Toolkit</strong></td>
+<td align="left"><strong>2.8.2</strong></td>
+<td align="left">Centralized, predictable application state for cart, authentication, and seller data.</td>
+</tr>
+<tr>
+<td align="left"><strong>UI Component Library</strong></td>
+<td align="left"><strong>Material-UI (MUI)</strong></td>
+<td align="left"><strong>7.1.x</strong></td>
+<td align="left">Polished, accessible e-commerce and administrative dashboard components.</td>
+</tr>
+<tr>
+<td align="left"><strong>Styling</strong></td>
+<td align="left"><strong>Tailwind CSS</strong></td>
+<td align="left"><strong>3.4.x / 4.x</strong></td>
+<td align="left">Utility-first responsive styling framework for custom storefront layouts.</td>
+</tr>
+<tr>
+<td align="left"><strong>Payments</strong></td>
+<td align="left"><strong>Razorpay &amp; Stripe SDKs</strong></td>
+<td align="left">1.4.9 / 26.12</td>
+<td align="left">Comprehensive payment processing covering UPI, Net Banking, Cards, and International Currencies.</td>
+</tr>
+<tr>
+<td align="left"><strong>Artificial Intelligence</strong></td>
+<td align="left"><strong>Google Gemini API</strong></td>
+<td align="left">REST / v1beta</td>
+<td align="left">Generative conversational intelligence with native function calling for live platform querying.</td>
+</tr>
+<tr>
+<td align="left"><strong>Media Hosting</strong></td>
+<td align="left"><strong>Cloudinary CDN</strong></td>
+<td align="left">API v1_1</td>
+<td align="left">Automatic image optimization, WebP compression, and responsive content delivery.</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>9. Security, Quality &amp; Performance Considerations</h2>
+<ul>
+<li><strong>Stateless Authorization:</strong> The server never stores user sessions in memory; authentication relies strictly on encrypted, signed JWT tokens passed via HTTP <code>Authorization: Bearer &lt;token&gt;</code> headers.</li>
+<li><strong>SQL Injection &amp; XSS Prevention:</strong> Handled via Hibernate parameterized queries and React’s built-in JSX contextual escaping.</li>
+<li><strong>Password Protection:</strong> Sensitive credentials stored as cryptographically salted hashes using <strong>BCryptPasswordEncoder</strong>.</li>
+<li><strong>Transactional Consistency:</strong> Critical multi-table updates (such as Order Splitting, Inventory Decrement, and Cart Clearing) are wrapped in <code>@Transactional</code> blocks to prevent partial writes.</li>
+<li><strong>Asset Optimization:</strong> Storefront media assets are served through Cloudinary CDN with automatic format selection (<code>webp</code>) and responsive image sizing to maximize Google PageSpeed scores.</li>
+</ul>
+<hr>
+<h2>10. System Prerequisites &amp; Hardware Specifications</h2>
+<h3>Minimum Development Hardware:</h3>
+<ul>
+<li><strong>Processor:</strong> Dual-Core 64-bit Intel Core i5 / AMD Ryzen 5 or equivalent.</li>
+<li><strong>Memory (RAM):</strong> 8 GB minimum (16 GB recommended for concurrent Spring Boot + Vite + PostgreSQL instances).</li>
+<li><strong>Disk Space:</strong> 5 GB free disk space.</li>
+</ul>
+<h3>Software Requirements:</h3>
+<ul>
+<li><strong>Operating System:</strong> Windows 10/11, macOS, or Ubuntu Linux 20.04+.</li>
+<li><strong>Java Development Kit:</strong> JDK 21 installed (<code>JAVA_HOME</code> configured).</li>
+<li><strong>Node.js Environment:</strong> Node.js v18+ and npm v9+.</li>
+<li><strong>Database Engine:</strong> PostgreSQL 15+ running on port 5432.</li>
+<li><strong>Build Tools:</strong> Apache Maven 3.9+ and Vite 7+.</li>
+</ul>
+<hr>
+<h2>11. Future Scope &amp; Enhancement Roadmap</h2>
+<ol>
+<li><strong>Microservices Decomposition:</strong> Decompose monolithic Spring Boot application into distinct containerized microservices (Auth Service, Catalog Service, Order Service, Notification Service) managed via Docker and Kubernetes.</li>
+<li><strong>Real-Time Websocket Notifications:</strong> Implement Spring WebSocket (STOMP) to push instant notifications to sellers when new orders are placed and to customers during shipment transit.</li>
+<li><strong>Advanced Seller Payout Automation:</strong> Integrate Stripe Connect or Razorpay Route for automated, direct split transfers of net vendor earnings post-commission.</li>
+<li><strong>Visual Product Search:</strong> Enhance Gemini AI integration with multimodal image search allowing shoppers to upload photos of outfits and discover visually similar products across the catalog.</li>
+<li><strong>Progressive Web App (PWA) &amp; Mobile Native Apps:</strong> Package frontend as an offline-capable PWA and build cross-platform mobile apps using React Native.</li>
+</ol>
+<hr>
+<h2>12. Conclusion</h2>
+<p>The <strong>Multi-Vendor E-Commerce Platform</strong> represents a comprehensive, modern solution to the complexities of multi-merchant digital commerce. By harmonizing robust backend architecture in Spring Boot with reactive, component-driven frontend interfaces in React 19, the system achieves exceptional responsiveness, security, and maintainability. Its unique integration of automated order splitting, dual domestic/international payment processing, and Google Gemini AI conversational commerce establishes it as a highly capable, future-ready commercial platform.</p>
+<h2>📡 REST API Endpoints Specification</h2>
+<table>
+<thead>
+<tr>
+<th align="left">Module</th>
+<th align="left">Method</th>
+<th align="left">Endpoint</th>
+<th align="left">Access Role</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Auth</strong></td>
+<td align="left"><code>POST</code></td>
+<td align="left"><code>/auth/signup</code></td>
+<td align="left">Public</td>
+<td align="left">Register new customer account</td>
+</tr>
+<tr>
+<td align="left"><strong>Auth</strong></td>
+<td align="left"><code>POST</code></td>
+<td align="left"><code>/auth/signin</code></td>
+<td align="left">Public</td>
+<td align="left">Authenticate user &amp; return JWT token</td>
+</tr>
+<tr>
+<td align="left"><strong>Auth</strong></td>
+<td align="left"><code>POST</code></td>
+<td align="left"><code>/auth/sent/login-signup-otp</code></td>
+<td align="left">Public</td>
+<td align="left">Generate and send email OTP</td>
+</tr>
+<tr>
+<td align="left"><strong>Products</strong></td>
+<td align="left"><code>GET</code></td>
+<td align="left"><code>/products</code></td>
+<td align="left">Public</td>
+<td align="left">Query paginated &amp; filtered products</td>
+</tr>
+<tr>
+<td align="left"><strong>Products</strong></td>
+<td align="left"><code>GET</code></td>
+<td align="left"><code>/products/{productId}</code></td>
+<td align="left">Public</td>
+<td align="left">Retrieve product detail by ID</td>
+</tr>
+<tr>
+<td align="left"><strong>Cart</strong></td>
+<td align="left"><code>GET</code></td>
+<td align="left"><code>/api/cart</code></td>
+<td align="left">Customer</td>
+<td align="left">Fetch current user&#39;s cart</td>
+</tr>
+<tr>
+<td align="left"><strong>Cart</strong></td>
+<td align="left"><code>PUT</code></td>
+<td align="left"><code>/api/cart/add</code></td>
+<td align="left">Customer</td>
+<td align="left">Add item variant to cart</td>
+</tr>
+<tr>
+<td align="left"><strong>Orders</strong></td>
+<td align="left"><code>POST</code></td>
+<td align="left"><code>/api/orders</code></td>
+<td align="left">Customer</td>
+<td align="left">Checkout &amp; trigger multi-vendor order split</td>
+</tr>
+<tr>
+<td align="left"><strong>Orders</strong></td>
+<td align="left"><code>GET</code></td>
+<td align="left"><code>/api/orders/user</code></td>
+<td align="left">Customer</td>
+<td align="left">Fetch current customer order history</td>
+</tr>
+<tr>
+<td align="left"><strong>Payments</strong></td>
+<td align="left"><code>POST</code></td>
+<td align="left"><code>/api/payment/{paymentMethod}/order/{orderId}</code></td>
+<td align="left">Customer</td>
+<td align="left">Initiate Razorpay or Stripe checkout link</td>
+</tr>
+<tr>
+<td align="left"><strong>Seller</strong></td>
+<td align="left"><code>POST</code></td>
+<td align="left"><code>/sellers</code></td>
+<td align="left">Public</td>
+<td align="left">Apply for vendor registration</td>
+</tr>
+<tr>
+<td align="left"><strong>Seller</strong></td>
+<td align="left"><code>GET</code></td>
+<td align="left"><code>/api/sellers/products</code></td>
+<td align="left">Seller</td>
+<td align="left">List all vendor&#39;s catalog items</td>
+</tr>
+<tr>
+<td align="left"><strong>Seller</strong></td>
+<td align="left"><code>POST</code></td>
+<td align="left"><code>/api/sellers/products</code></td>
+<td align="left">Seller</td>
+<td align="left">Create a new product listing</td>
+</tr>
+<tr>
+<td align="left"><strong>Seller</strong></td>
+<td align="left"><code>GET</code></td>
+<td align="left"><code>/api/seller/orders</code></td>
+<td align="left">Seller</td>
+<td align="left">View orders assigned to this seller</td>
+</tr>
+<tr>
+<td align="left"><strong>Seller</strong></td>
+<td align="left"><code>PATCH</code></td>
+<td align="left"><code>/api/seller/orders/{orderId}/status/{status}</code></td>
+<td align="left">Seller</td>
+<td align="left">Update order fulfillment status</td>
+</tr>
+<tr>
+<td align="left"><strong>Admin</strong></td>
+<td align="left"><code>GET</code></td>
+<td align="left"><code>/api/admin/sellers</code></td>
+<td align="left">Admin</td>
+<td align="left">Review pending merchant accounts</td>
+</tr>
+<tr>
+<td align="left"><strong>Admin</strong></td>
+<td align="left"><code>PATCH</code></td>
+<td align="left"><code>/api/admin/sellers/{id}/status/{status}</code></td>
+<td align="left">Admin</td>
+<td align="left">Approve or suspend vendor</td>
+</tr>
+<tr>
+<td align="left"><strong>Admin</strong></td>
+<td align="left"><code>POST</code></td>
+<td align="left"><code>/api/coupons</code></td>
+<td align="left">Admin</td>
+<td align="left">Create new promotional discount coupon</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>🚀 Getting Started &amp; Local Setup</h2>
+<h3>Prerequisites</h3>
+<ul>
+<li><strong>Java:</strong> JDK 21+ installed (<code>java -version</code>)</li>
+<li><strong>Maven:</strong> Apache Maven 3.9+ (<code>mvn -version</code>)</li>
+<li><strong>Node.js:</strong> v18+ and npm v9+ (<code>node -v</code>, <code>npm -v</code>)</li>
+<li><strong>Database:</strong> PostgreSQL 15+ running on port 5432</li>
+</ul>
+<h3>Step 1: Database Setup</h3>
+<p>Create a PostgreSQL database named <code>vendor_db</code>:</p>
+<pre><code class="language-sql">CREATE DATABASE vendor_db;
+</code></pre>
+<h3>Step 2: Backend Configuration &amp; Execution</h3>
+<ol>
+<li>Navigate to backend:<pre><code class="language-bash">cd &quot;Multi Vendor backend&quot;
+</code></pre>
+</li>
+<li>Configure <code>src/main/resources/application.properties</code> (Port 5454, DB credentials, SMTP, Gemini API key).</li>
+<li>Start Spring Boot:<pre><code class="language-bash">mvn clean spring-boot:run
+</code></pre>
+<em>Backend URL:</em> <code>http://localhost:5454</code></li>
+</ol>
+<h3>Step 3: Frontend Configuration &amp; Execution</h3>
+<ol>
+<li>Navigate to frontend:<pre><code class="language-bash">cd ../frontend-vite
+</code></pre>
+</li>
+<li>Install dependencies &amp; run:<pre><code class="language-bash">npm install
+npm run dev
+</code></pre>
+<em>Frontend URL:</em> <code>http://localhost:3000</code></li>
+</ol>
+<hr>
+<h2>👨‍💻 Author &amp; Repository</h2>
+<ul>
+<li><strong>Developer:</strong> Vikas Prajapati</li>
+<li><strong>Repository:</strong> <a href="https://github.com/vikas-prajapatii/multivendor_backend">multivendor_backend</a></li>
+</ul>
+
+  </article>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
+</body>
+</html>
