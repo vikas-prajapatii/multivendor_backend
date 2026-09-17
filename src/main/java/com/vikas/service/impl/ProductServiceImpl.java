@@ -68,18 +68,20 @@ public class ProductServiceImpl implements ProductService {
         product.setMrpPrice(req.getMrpPrice());
         product.setSize(req.getSize());
         product.setDiscountPercentage(discountPercentage);
+        product.setQuantity(req.getQuantity() != null ? req.getQuantity() : 10);
+        product.setIn_stock(product.getQuantity() > 0);
 
         return productRepository.save(product);
     }
 
     private int calculateDiscountPercentage(int mrpPrice, int sellingPrice) {
         if (mrpPrice <= 0) {
-            throw new IllegalArgumentException("MrpPrice must be greater than 0");
+            return 0;
         }
         double discount = mrpPrice - sellingPrice;
         double discountPercentage = (discount / mrpPrice) * 100;
 
-        return (int)discountPercentage;
+        return Math.max(0, (int)discountPercentage);
     }
 
     @Override
@@ -113,9 +115,16 @@ public class ProductServiceImpl implements ProductService {
     public Page<Product> getAllProducts(String category, String brand, String colors, String size, Integer minPrice, Integer maxPrice, String stock, String sort, Integer minDiscount, Integer maxDiscount, Integer pageNumber) {
         Specification<Product> specification = (root,query,criteriaBuilder) ->{
             List<Predicate> predicates = new ArrayList<>();
-            if(category != null) {
-                Join<Product, Category> categoryJoin = root.join("category");
-                predicates.add(criteriaBuilder.equal(categoryJoin.get("categoryId"), category));
+            if(category != null && !category.trim().isEmpty()) {
+                Join<Product, Category> categoryJoin = root.join("category", JoinType.LEFT);
+                Join<Category, Category> parentCategoryJoin = categoryJoin.join("parentCategory", JoinType.LEFT);
+                Join<Category, Category> grandParentCategoryJoin = parentCategoryJoin.join("parentCategory", JoinType.LEFT);
+
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.equal(categoryJoin.get("categoryId"), category.trim()),
+                        criteriaBuilder.equal(parentCategoryJoin.get("categoryId"), category.trim()),
+                        criteriaBuilder.equal(grandParentCategoryJoin.get("categoryId"), category.trim())
+                ));
             }
            if(colors != null && !colors.isEmpty()) {
                System.out.println("colors: " + colors);

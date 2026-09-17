@@ -9,6 +9,7 @@ public class SignupRequest {
     private String fullName;
     private String email;
     private String otp;
+    private String password;
 
     public String getFirstName() {
         if (fullName == null) {

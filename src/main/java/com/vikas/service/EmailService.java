@@ -16,7 +16,6 @@ public class EmailService {
     private JavaMailSender javaMailSender;
 
     public void sendVerificationOtpEmail(String userEmail, String otp, String subject, String text) throws MessagingException, MailSendException {
-
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
@@ -32,5 +31,26 @@ public class EmailService {
 
     public void sendVerificationOtpMail(String userEmail, String otp, String subject, String text) throws MessagingException, MailSendException {
         sendVerificationOtpEmail(userEmail, otp, subject, text);
+    }
+
+    public void sendOtp(String to, String otp) {
+        try {
+            sendVerificationOtpEmail(to, otp, "Noir Bazaar - Verify Your Email", "Your verification OTP is: " + otp);
+        } catch (Exception e) {
+            System.err.println("Failed to send OTP email: " + e.getMessage());
+        }
+    }
+
+    public void sendPasswordResetLink(String to, String resetLink) {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+            helper.setSubject("Noir Bazaar - Reset Your Password");
+            helper.setText("Please click the link below to reset your password:\n" + resetLink, false);
+            helper.setTo(to);
+            javaMailSender.send(mimeMessage);
+        } catch (Exception e) {
+            System.err.println("Failed to send reset email: " + e.getMessage());
+        }
     }
 }

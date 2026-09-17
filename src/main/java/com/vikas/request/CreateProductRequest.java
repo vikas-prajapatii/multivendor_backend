@@ -33,6 +33,8 @@ public class CreateProductRequest {
 
     private String sizes;
 
+    private Integer quantity;
+
     public String getSize() {
         return sizes;
     }

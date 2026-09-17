@@ -37,7 +37,18 @@ public class Product {
 
     private String size;
 
-    private int quantity;
+    private int quantity = 10;
+
+    @Transient
+    private boolean in_stock = true;
+
+    public boolean isIn_stock() {
+        return quantity > 0;
+    }
+
+    public void setIn_stock(boolean in_stock) {
+        this.in_stock = in_stock;
+    }
 
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> review = new ArrayList<>();

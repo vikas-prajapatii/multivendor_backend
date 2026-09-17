@@ -8,16 +8,33 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-
+@RequestMapping({"/api/users", "/users"})
 public class UserController {
     private final UserService userService;
-    @GetMapping("/users/profile")
-    public ResponseEntity<User> createUserHandler(
+
+    @GetMapping({"/profile", ""})
+    public ResponseEntity<User> getUserProfileHandler(
             @RequestHeader("Authorization") String jwt
-    ) throws Exception{
+    ) throws Exception {
         User user = userService.findUserByJwtToken(jwt);
         return ResponseEntity.ok(user);
-        
+    }
 
+    @PatchMapping({"/profile", ""})
+    public ResponseEntity<User> updateUserProfileHandler(
+            @RequestBody User user,
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        User updatedUser = userService.updateUser(user, jwt);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @PutMapping({"/profile", ""})
+    public ResponseEntity<User> putUserProfileHandler(
+            @RequestBody User user,
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        User updatedUser = userService.updateUser(user, jwt);
+        return ResponseEntity.ok(updatedUser);
     }
 }

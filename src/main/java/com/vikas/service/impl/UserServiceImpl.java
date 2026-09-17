@@ -29,4 +29,22 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+    @Override
+    public User updateUser(User reqUser, String jwt) throws Exception {
+        User existingUser = findUserByJwtToken(jwt);
+        if (reqUser.getFirstName() != null && !reqUser.getFirstName().trim().isEmpty()) {
+            existingUser.setFirstName(reqUser.getFirstName().trim());
+        }
+        if (reqUser.getLastName() != null) {
+            existingUser.setLastName(reqUser.getLastName().trim());
+        }
+        if (reqUser.getPhoneNumber() != null && !reqUser.getPhoneNumber().trim().isEmpty()) {
+            existingUser.setPhoneNumber(reqUser.getPhoneNumber().trim());
+        }
+        if (reqUser.getProfileImage() != null && !reqUser.getProfileImage().trim().isEmpty()) {
+            existingUser.setProfileImage(reqUser.getProfileImage().trim());
+        }
+        return userRepository.save(existingUser);
+    }
 }

@@ -34,5 +34,8 @@ public class Seller {
 
     private AccountStatus accountStatus = AccountStatus.PENDING_VERIFICATION;
 
+    @Column(length = 5000)
+    private String profileImage;
+
 
 }

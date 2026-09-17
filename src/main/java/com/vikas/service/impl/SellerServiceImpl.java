@@ -25,10 +25,13 @@ public class SellerServiceImpl implements SellerService {
     private final PasswordEncoder passwordEncoder;
     private final AddressRepository addressRepository;
     @Override
-    public Seller getSellerProfile(String jwt){
-        String email = jwtProvider.getEmailFromToken(jwt);
-
-        return this.getSellerByEmail(email);
+    public Seller getSellerProfile(String jwt) {
+        try {
+            String email = jwtProvider.getEmailFromToken(jwt);
+            return sellerRepository.findByEmail(email);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -86,6 +89,9 @@ public class SellerServiceImpl implements SellerService {
         }
         if(seller.getEmail() != null){
             existingSeller.setEmail(seller.getEmail());
+        }
+        if(seller.getProfileImage() != null){
+            existingSeller.setProfileImage(seller.getProfileImage());
         }
         if(seller.getBusinessDetails() != null && seller.getBusinessDetails().getBusinessName() != null){
             existingSeller.getBusinessDetails().setBusinessName(seller.getBusinessDetails().getBusinessName());
