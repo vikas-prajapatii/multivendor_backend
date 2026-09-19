@@ -8,11 +8,15 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import com.vikas.domain.OrderStatus;
+import com.vikas.domain.PaymentMethod;
 import com.vikas.domain.PaymentOrderStatus;
 import com.vikas.domain.PaymentStatus;
+import com.vikas.model.Cart;
 import com.vikas.model.Order;
 import com.vikas.model.PaymentOrder;
 import com.vikas.model.User;
+import com.vikas.repository.CartRepository;
 import com.vikas.repository.OrderRepository;
 import com.vikas.repository.PaymentOrderRepository;
 import com.vikas.service.PaymentService;
@@ -27,6 +31,7 @@ import java.util.Set;
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentOrderRepository paymentOrderRepository;
     private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
     private String apiKey = "apikey";
     private String apiSecret = "apisecret";
     private String stripeSecretKey = "stripeSecretkey";
@@ -62,14 +67,21 @@ public class PaymentServiceImpl implements PaymentService {
     public Boolean proceedPaymentOrder(PaymentOrder paymentOrder, String paymentId, String paymentLinkId) throws RazorpayException {
         if (paymentOrder.getStatus().equals(PaymentOrderStatus.PENDING)) {
 
-            if (paymentId != null && (paymentId.startsWith("mock_") || "apikey".equals(apiKey))) {
+            if (paymentId != null && (paymentId.startsWith("mock_") || paymentId.startsWith("cod_") || "apikey".equals(apiKey))) {
                 Set<Order> orders = paymentOrder.getOrders();
                 for (Order order : orders) {
-                    order.setPaymentStatus(PaymentStatus.COMPLETED);
+                    if (paymentId.startsWith("cod_") || (paymentOrder.getPaymentMethod() != null && paymentOrder.getPaymentMethod() == PaymentMethod.COD)) {
+                        order.setPaymentStatus(PaymentStatus.PENDING);
+                    } else {
+                        order.setPaymentStatus(PaymentStatus.COMPLETED);
+                    }
+                    order.setOrderStatus(OrderStatus.PLACED);
                     orderRepository.save(order);
                 }
                 paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
                 paymentOrderRepository.save(paymentOrder);
+
+                clearUserCart(paymentOrder.getUser());
                 return true;
             }
 
@@ -85,11 +97,14 @@ public class PaymentServiceImpl implements PaymentService {
 
                 for (Order order : orders) {
                     order.setPaymentStatus(PaymentStatus.COMPLETED);
+                    order.setOrderStatus(OrderStatus.PLACED);
                     orderRepository.save(order);
                 }
 
                 paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
                 paymentOrderRepository.save(paymentOrder);
+
+                clearUserCart(paymentOrder.getUser());
                 return true;
             }
 
@@ -98,6 +113,23 @@ public class PaymentServiceImpl implements PaymentService {
             return false;
         }
         return false;
+    }
+
+    private void clearUserCart(User user) {
+        if (user != null) {
+            try {
+                Cart cart = cartRepository.findByUserId(user.getId());
+                if (cart != null && cart.getCartItems() != null) {
+                    cart.getCartItems().clear();
+                    cart.setTotalItem(0);
+                    cart.setTotalMrpPrice(0);
+                    cart.setTotalSellingPrice(0);
+                    cartRepository.save(cart);
+                }
+            } catch (Exception e) {
+                System.out.println("Could not clear user cart: " + e.getMessage());
+            }
+        }
     }
 
     @Override

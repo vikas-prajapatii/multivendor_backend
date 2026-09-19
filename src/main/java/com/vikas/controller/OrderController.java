@@ -1,8 +1,13 @@
 package com.vikas.controller;
 
 import com.razorpay.PaymentLink;
+import com.vikas.domain.OrderStatus;
 import com.vikas.domain.PaymentMethod;
+import com.vikas.domain.PaymentOrderStatus;
+import com.vikas.domain.PaymentStatus;
 import com.vikas.model.*;
+import com.vikas.repository.CartRepository;
+import com.vikas.repository.OrderRepository;
 import com.vikas.repository.PaymentOrderRepository;
 import com.vikas.response.PaymentLinkResponse;
 import com.vikas.service.*;
@@ -23,6 +28,8 @@ public class OrderController
     private final OrderService orderService;
     private final UserService userService;
     private final CartService cartService;
+    private final CartRepository cartRepository;
+    private final OrderRepository orderRepository;
     private final SellerService sellerService;
     private final SellerReportService sellerReportService;
     private final PaymentService paymentService;
@@ -38,9 +45,35 @@ public class OrderController
         User user = userService.findUserByJwtToken(jwt);
         Cart cart = cartService.findUserCart(user);
         Set<Order> orders = orderService.createOrder(user, shippingAddress, cart);
-       PaymentOrder paymentOrder = paymentService.createOrder(user,orders);
-       PaymentLinkResponse res = new PaymentLinkResponse();
-        if (paymentMethod.equals(PaymentMethod.RAZORPAY)) {
+        PaymentOrder paymentOrder = paymentService.createOrder(user, orders);
+        PaymentLinkResponse res = new PaymentLinkResponse();
+        Long primaryOrderId = orders.isEmpty() ? paymentOrder.getId() : orders.iterator().next().getId();
+
+        if (paymentMethod.equals(PaymentMethod.COD)) {
+            for (Order order : orders) {
+                order.setOrderStatus(OrderStatus.PLACED);
+                order.setPaymentStatus(PaymentStatus.PENDING);
+                orderRepository.save(order);
+            }
+            paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
+            paymentOrder.setPaymentMethod(PaymentMethod.COD);
+            paymentOrder.setPaymentLinkId("cod_" + paymentOrder.getId());
+            paymentOrderRepository.save(paymentOrder);
+
+            // Clear the cart on successful COD order
+            try {
+                cart.getCartItems().clear();
+                cart.setTotalItem(0);
+                cart.setTotalMrpPrice(0);
+                cart.setTotalSellingPrice(0);
+                cartRepository.save(cart);
+            } catch (Exception e) {
+                System.out.println("Could not clear cart: " + e.getMessage());
+            }
+
+            res.setPayment_link_url("/payment-success/" + paymentOrder.getId() + "?razorpay_payment_id=cod_" + paymentOrder.getId() + "&razorpay_payment_link_id=cod_" + paymentOrder.getId() + "&payment_method=COD&order_id=" + primaryOrderId);
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } else if (paymentMethod.equals(PaymentMethod.RAZORPAY)) {
             try {
                 PaymentLink payment = paymentService.createRazorpayPaymentLink(
                         user,
@@ -58,7 +91,7 @@ public class OrderController
                 String mockPaymentId = "mock_pay_" + System.currentTimeMillis();
                 paymentOrder.setPaymentLinkId(mockLinkId);
                 paymentOrderRepository.save(paymentOrder);
-                res.setPayment_link_url("http://localhost:3000/payment-success/" + paymentOrder.getId() + "?razorpay_payment_id=" + mockPaymentId + "&razorpay_payment_link_id=" + mockLinkId);
+                res.setPayment_link_url("/payment-success/" + paymentOrder.getId() + "?razorpay_payment_id=" + mockPaymentId + "&razorpay_payment_link_id=" + mockLinkId + "&order_id=" + primaryOrderId);
             }
         } else {
             try {
@@ -74,7 +107,7 @@ public class OrderController
                 String mockPaymentId = "mock_stripe_" + System.currentTimeMillis();
                 paymentOrder.setPaymentLinkId(mockLinkId);
                 paymentOrderRepository.save(paymentOrder);
-                res.setPayment_link_url("http://localhost:3000/payment-success/" + paymentOrder.getId() + "?razorpay_payment_id=" + mockPaymentId + "&razorpay_payment_link_id=" + mockLinkId);
+                res.setPayment_link_url("/payment-success/" + paymentOrder.getId() + "?razorpay_payment_id=" + mockPaymentId + "&razorpay_payment_link_id=" + mockLinkId + "&order_id=" + primaryOrderId);
             }
         }
         return new ResponseEntity<>(res, HttpStatus.OK);
