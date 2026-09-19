@@ -165,80 +165,118 @@ public class AiChatBotServiceImpl implements AiChatBotService {
 
     @Override
     public ApiResponse aiChatBot(String prompt, Long productId, Long userId) throws ProductException {
-        String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY;
+        if (prompt == null || prompt.trim().isEmpty()) {
+            ApiResponse res = new ApiResponse();
+            res.setMessage("Hello! Welcome to Noir Bazar. How can I assist you with your shopping today?");
+            return res;
+        }
 
-        System.out.println("------- " + prompt);
+        String lowerPrompt = prompt.toLowerCase().trim();
 
-        FunctionResponse functionResponse = getFunctionResponse(prompt, productId, userId);
-        System.out.println("------- " + functionResponse);
+        // 1. If asking about a specific product and productId is provided
+        if (productId != null) {
+            Product product = productRepository.findById(productId).orElse(null);
+            if (product != null) {
+                ApiResponse res = new ApiResponse();
+                res.setMessage("The \"" + product.getTitle() + "\" is priced at ₹" + product.getSellingPrice() 
+                        + (product.getQuantity() > 0 ? " and is in stock (" + product.getQuantity() + " available)." : " but is currently out of stock.")
+                        + " Color: " + (product.getColor() != null ? product.getColor() : "Multi") + ".");
+                return res;
+            }
+        }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        // 2. Check if asking about Cart
+        if (lowerPrompt.contains("cart") || lowerPrompt.contains("basket")) {
+            ApiResponse res = new ApiResponse();
+            if (userId != null) {
+                Cart cart = cartRepository.findByUserId(userId);
+                if (cart != null && cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
+                    StringBuilder sb = new StringBuilder("You currently have " + cart.getCartItems().size() + " item(s) in your cart (Total: ₹" + (int) cart.getTotalSellingPrice() + "):\n");
+                    cart.getCartItems().forEach(item -> {
+                        if (item.getProduct() != null) {
+                            sb.append("• ").append(item.getProduct().getTitle()).append(" - Qty: ").append(item.getQuantity()).append(" (₹").append(item.getSellingPrice()).append(")\n");
+                        }
+                    });
+                    res.setMessage(sb.toString().trim());
+                } else {
+                    res.setMessage("Your shopping cart is currently empty. Feel free to browse our collection and add your favorite items!");
+                }
+            } else {
+                res.setMessage("Please sign in to view and manage your cart items.");
+            }
+            return res;
+        }
 
-        String body = new JSONObject()
-                .put("contents", new JSONArray()
-                        .put(new JSONObject()
-                                .put("role", "user")
-                                .put("parts", new JSONArray()
-                                        .put(new JSONObject()
-                                                .put("text", prompt)
-                                        )
-                                )
-                        )
-                        .put(new JSONObject()
-                                .put("role", "model")
-                                .put("parts", new JSONArray()
-                                        .put(new JSONObject()
-                                                .put("functionCall", new JSONObject()
-                                                        .put("name", functionResponse.getFunctionName())
-                                                        .put("args", new JSONObject()
-                                                                .put("cart", functionResponse.getUserCart() != null ? functionResponse.getUserCart().getUser() : null)
-                                                                .put("order", functionResponse.getOrderHistory() != null ? functionResponse.getOrderHistory() : null)
-                                                                .put("product", functionResponse.getProduct() != null ? ProductMapper.toProductDto(functionResponse.getProduct()) : null)
-                                                        )
-                                                )
-                                        )
-                                )
-                        )
-                        .put(new JSONObject()
-                                .put("role", "function")
-                                .put("parts", new JSONArray()
-                                        .put(new JSONObject()
-                                                .put("functionResponse", new JSONObject()
-                                                        .put("name", functionResponse.getFunctionName())
-                                                        .put("response", new JSONObject()
-                                                                .put("name", functionResponse.getFunctionName())
-                                                                .put("content", functionResponse)
-                                                        )
-                                                )
-                                        )
-                                )
-                        )
-                )
-                .put("tools", new JSONArray()
-                        .put(new JSONObject()
-                                .put("functionDeclarations", createFunctionDeclarations())
-                        )
-                )
-                .toString();
+        // 3. Check if asking about Orders
+        if (lowerPrompt.contains("order") || lowerPrompt.contains("track") || lowerPrompt.contains("delivery")) {
+            ApiResponse res = new ApiResponse();
+            if (userId != null) {
+                List<Order> orders = orderRepository.findByUserId(userId);
+                if (orders != null && !orders.isEmpty()) {
+                    Order latest = orders.get(orders.size() - 1);
+                    res.setMessage("You have " + orders.size() + " order(s). Your latest order #" + latest.getOrderId() 
+                            + " has status: " + latest.getOrderStatus() + " (Total: ₹" + latest.getTotalSellingPrice() + ").");
+                } else {
+                    res.setMessage("You haven't placed any orders yet. Check out our latest deals to place your first order!");
+                }
+            } else {
+                res.setMessage("Please sign in to view your order history and tracking status.");
+            }
+            return res;
+        }
 
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.postForEntity(GEMINI_API_URL, request, String.class);
+        // 4. Product Search & Availability Check (e.g. "blue saree is available or not", "saree", "kurta", "laptop")
+        String cleaned = lowerPrompt
+                .replaceAll("\\b(is|are|available|or|not|in|stock|do|you|have|show|me|find|the|a|an|please|can|i|get|want|to|buy|price|of)\\b", " ")
+                .replaceAll("[^a-zA-Z0-9 ]", " ")
+                .trim()
+                .replaceAll(" +", " ");
 
-        String responseBody = response.getBody();
-        JSONObject jsonObject = new JSONObject(responseBody);
+        List<Product> matchedProducts = null;
+        if (!cleaned.isEmpty()) {
+            matchedProducts = productRepository.searchProduct(cleaned);
+        }
 
-        JSONArray candidates = jsonObject.getJSONArray("candidates");
-        JSONObject firstCandidate = candidates.getJSONObject(0);
+        // Try single keywords if multi-word phrase didn't match
+        if ((matchedProducts == null || matchedProducts.isEmpty()) && !cleaned.isEmpty()) {
+            String[] words = cleaned.split(" ");
+            for (String word : words) {
+                if (word.length() >= 3) {
+                    matchedProducts = productRepository.searchProduct(word);
+                    if (matchedProducts != null && !matchedProducts.isEmpty()) {
+                        break;
+                    }
+                }
+            }
+        }
 
-        JSONObject content = firstCandidate.getJSONObject("content");
-        JSONArray parts = content.getJSONArray("parts");
-        JSONObject firstPart = parts.getJSONObject(0);
-        String text = firstPart.getString("text");
+        if (matchedProducts != null && !matchedProducts.isEmpty()) {
+            StringBuilder sb = new StringBuilder("Yes! We have available products matching your search:\n");
+            int count = 0;
+            for (Product p : matchedProducts) {
+                if (count++ >= 4) break;
+                sb.append("• ").append(p.getTitle()).append(" - ₹").append(p.getSellingPrice());
+                if (p.getQuantity() > 0) {
+                    sb.append(" (In Stock)");
+                }
+                sb.append("\n");
+            }
+            sb.append("\nYou can browse them directly in our store collection!");
+            ApiResponse res = new ApiResponse();
+            res.setMessage(sb.toString().trim());
+            return res;
+        }
 
+        // 5. Greeting
+        if (lowerPrompt.contains("hello") || lowerPrompt.contains("hi") || lowerPrompt.contains("hey")) {
+            ApiResponse res = new ApiResponse();
+            res.setMessage("Hello! Welcome to Noir Bazar. I can help you check product availability, sarees, dresses, cart details, and order tracking. How can I help you today?");
+            return res;
+        }
+
+        // 6. Helpful default response
         ApiResponse res = new ApiResponse();
-        res.setMessage(text);
+        res.setMessage("Currently, we couldn't find an exact match for \"" + prompt.trim() + "\", but we have 40+ exquisite sarees, ethnic wear, and deals in our store! Browse our Women's section or ask for specific styles.");
         return res;
     }
 }
