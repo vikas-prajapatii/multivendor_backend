@@ -163,11 +163,16 @@ public class AiChatBotServiceImpl implements AiChatBotService {
         return processFunctionCall(functionCall, productId, userId);
     }
 
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) return "";
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
     @Override
     public ApiResponse aiChatBot(String prompt, Long productId, Long userId) throws ProductException {
         if (prompt == null || prompt.trim().isEmpty()) {
             ApiResponse res = new ApiResponse();
-            res.setMessage("Hello! Welcome to Noir Bazar. How can I assist you with your shopping today?");
+            res.setMessage("Hello! Welcome to Noir Bazar. How can I assist your shopping today?");
             return res;
         }
 
@@ -178,105 +183,230 @@ public class AiChatBotServiceImpl implements AiChatBotService {
             Product product = productRepository.findById(productId).orElse(null);
             if (product != null) {
                 ApiResponse res = new ApiResponse();
-                res.setMessage("The \"" + product.getTitle() + "\" is priced at ₹" + product.getSellingPrice() 
-                        + (product.getQuantity() > 0 ? " and is in stock (" + product.getQuantity() + " available)." : " but is currently out of stock.")
-                        + " Color: " + (product.getColor() != null ? product.getColor() : "Multi") + ".");
+                res.setMessage("✨ " + product.getTitle() + "\n\n"
+                        + "• Price: ₹" + product.getSellingPrice() + " (MRP: ₹" + product.getMrpPrice() + ")\n"
+                        + "• Availability: " + (product.getQuantity() > 0 ? "In Stock (" + product.getQuantity() + " units available)" : "Currently Out of Stock") + "\n"
+                        + "• Color: " + (product.getColor() != null ? product.getColor() : "Standard") + "\n\n"
+                        + "Would you like help adding this to your cart?");
                 return res;
             }
         }
 
-        // 2. Check if asking about Cart
+        // 2. Cart Inquiry
         if (lowerPrompt.contains("cart") || lowerPrompt.contains("basket")) {
             ApiResponse res = new ApiResponse();
             if (userId != null) {
                 Cart cart = cartRepository.findByUserId(userId);
                 if (cart != null && cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
-                    StringBuilder sb = new StringBuilder("You currently have " + cart.getCartItems().size() + " item(s) in your cart (Total: ₹" + (int) cart.getTotalSellingPrice() + "):\n");
+                    StringBuilder sb = new StringBuilder("🛒 You have " + cart.getCartItems().size() + " item(s) in your cart (Total: ₹" + (int) cart.getTotalSellingPrice() + "):\n\n");
                     cart.getCartItems().forEach(item -> {
                         if (item.getProduct() != null) {
-                            sb.append("• ").append(item.getProduct().getTitle()).append(" - Qty: ").append(item.getQuantity()).append(" (₹").append(item.getSellingPrice()).append(")\n");
+                            sb.append("• ").append(item.getProduct().getTitle())
+                              .append(" — Qty: ").append(item.getQuantity())
+                              .append(" (₹").append(item.getSellingPrice()).append(")\n");
                         }
                     });
+                    sb.append("\nYou can proceed to checkout from the cart icon at top right.");
                     res.setMessage(sb.toString().trim());
                 } else {
-                    res.setMessage("Your shopping cart is currently empty. Feel free to browse our collection and add your favorite items!");
+                    res.setMessage("🛒 Your shopping cart is currently empty.\n\nExplore our latest collection to add your favorite items!");
                 }
             } else {
-                res.setMessage("Please sign in to view and manage your cart items.");
+                res.setMessage("Please sign in to view and manage your shopping cart.");
             }
             return res;
         }
 
-        // 3. Check if asking about Orders
-        if (lowerPrompt.contains("order") || lowerPrompt.contains("track") || lowerPrompt.contains("delivery")) {
+        // 3. Order Tracking Inquiry
+        if (lowerPrompt.contains("order") || lowerPrompt.contains("track") || lowerPrompt.contains("delivery") || lowerPrompt.contains("shipping")) {
             ApiResponse res = new ApiResponse();
             if (userId != null) {
                 List<Order> orders = orderRepository.findByUserId(userId);
                 if (orders != null && !orders.isEmpty()) {
                     Order latest = orders.get(orders.size() - 1);
-                    res.setMessage("You have " + orders.size() + " order(s). Your latest order #" + latest.getOrderId() 
-                            + " has status: " + latest.getOrderStatus() + " (Total: ₹" + latest.getTotalSellingPrice() + ").");
+                    res.setMessage("📦 You have placed " + orders.size() + " order(s).\n\n"
+                            + "Latest Order #" + latest.getOrderId() + "\n"
+                            + "• Status: " + latest.getOrderStatus() + "\n"
+                            + "• Amount: ₹" + latest.getTotalSellingPrice() + "\n"
+                            + "• Expected Delivery: " + (latest.getDeliveryDate() != null ? latest.getDeliveryDate().toLocalDate() : "Within 5-7 days"));
                 } else {
-                    res.setMessage("You haven't placed any orders yet. Check out our latest deals to place your first order!");
+                    res.setMessage("You haven't placed any orders yet. Place your first order today to enjoy exclusive deals!");
                 }
             } else {
-                res.setMessage("Please sign in to view your order history and tracking status.");
+                res.setMessage("Please sign in to check your order history and live delivery status.");
             }
             return res;
         }
 
-        // 4. Product Search & Availability Check (e.g. "blue saree is available or not", "saree", "kurta", "laptop")
-        String cleaned = lowerPrompt
-                .replaceAll("\\b(is|are|available|or|not|in|stock|do|you|have|show|me|find|the|a|an|please|can|i|get|want|to|buy|price|of)\\b", " ")
-                .replaceAll("[^a-zA-Z0-9 ]", " ")
-                .trim()
-                .replaceAll(" +", " ");
-
-        List<Product> matchedProducts = null;
-        if (!cleaned.isEmpty()) {
-            matchedProducts = productRepository.searchProduct(cleaned);
+        // 4. Greeting
+        if (lowerPrompt.matches("^(hi|hello|hey|greetings|namaste|good\\s*(morning|afternoon|evening)).*") || lowerPrompt.equals("hi") || lowerPrompt.equals("hello")) {
+            ApiResponse res = new ApiResponse();
+            res.setMessage("👋 Hello! Welcome to Noir Bazar.\n\n"
+                    + "I can assist you with:\n"
+                    + "• Checking product availability (e.g. \"silk saree\", \"purple saree\")\n"
+                    + "• Finding Kurtas, Dresses, Menswear, or Electronics\n"
+                    + "• Viewing your cart and tracking orders\n\n"
+                    + "What are you looking for today?");
+            return res;
         }
 
-        // Try single keywords if multi-word phrase didn't match
-        if ((matchedProducts == null || matchedProducts.isEmpty()) && !cleaned.isEmpty()) {
-            String[] words = cleaned.split(" ");
-            for (String word : words) {
-                if (word.length() >= 3) {
-                    matchedProducts = productRepository.searchProduct(word);
-                    if (matchedProducts != null && !matchedProducts.isEmpty()) {
-                        break;
-                    }
+        // 5. Semantic Product Category / Noun Matching
+        String[][] nounRules = {
+            {"saree", "saree", "sari", "sarees", "saris"},
+            {"kurta", "kurti", "kurtis", "kurta", "kurtas", "anarkali", "suit", "suits"},
+            {"dress", "dress", "dresses", "gown", "gowns", "frock"},
+            {"jeans", "jeans", "denim"},
+            {"t-shirt", "t-shirt", "tshirt", "t shirt", "tee"},
+            {"shirt", "shirt", "shirts"},
+            {"jacket", "jacket", "jackets", "coat", "blazer"},
+            {"shoe", "shoe", "shoes", "sneaker", "sneakers", "loafer", "loafers", "footwear"},
+            {"laptop", "laptop", "laptops", "macbook", "computer"},
+            {"mobile", "mobile", "mobiles", "phone", "phones", "smartphone", "iphone"},
+            {"speaker", "speaker", "speakers", "soundbar", "audio"},
+            {"carpet", "carpet", "carpets", "rug", "rugs"}
+        };
+
+        String matchedNoun = null;
+        for (String[] rule : nounRules) {
+            for (int i = 1; i < rule.length; i++) {
+                if (lowerPrompt.contains(rule[i])) {
+                    matchedNoun = rule[0];
+                    break;
                 }
+            }
+            if (matchedNoun != null) break;
+        }
+
+        String[] colors = {"blue", "red", "black", "white", "pink", "yellow", "green", "purple", "violet", "gold", "golden", "grey", "gray", "orange", "brown", "maroon", "silver"};
+        String[] fabrics = {"silk", "cotton", "linen", "leather", "denim", "satin", "georgette", "chiffon", "kanjeevaram", "banarasi", "paithani", "bandhani"};
+
+        String detectedColor = null;
+        for (String c : colors) {
+            if (lowerPrompt.contains(c)) {
+                detectedColor = c;
+                break;
             }
         }
 
-        if (matchedProducts != null && !matchedProducts.isEmpty()) {
-            StringBuilder sb = new StringBuilder("Yes! We have available products matching your search:\n");
+        String detectedFabric = null;
+        for (String f : fabrics) {
+            if (lowerPrompt.contains(f)) {
+                detectedFabric = f;
+                break;
+            }
+        }
+
+        if (matchedNoun != null) {
+            List<Product> nounProducts = productRepository.searchProduct(matchedNoun);
+
+            if (nounProducts == null || nounProducts.isEmpty()) {
+                ApiResponse res = new ApiResponse();
+                res.setMessage("We currently do not have " + matchedNoun + "s in our collection.\n\n"
+                        + "✨ Noir Bazar specializes in:\n"
+                        + "• Handcrafted Sarees (Kanjeevaram, Banarasi, Paithani)\n"
+                        + "• Women's Ethnic Wear & Dresses\n"
+                        + "• Premium Men's Fashion & Footwear\n"
+                        + "• Top Electronics & Audio\n\n"
+                        + "Feel free to browse our categories from the navigation bar!");
+                return res;
+            }
+
+            List<Product> filtered = new java.util.ArrayList<>(nounProducts);
+
+            if (detectedColor != null) {
+                final String col = detectedColor;
+                List<Product> colorMatches = filtered.stream()
+                        .filter(p -> (p.getColor() != null && p.getColor().toLowerCase().contains(col))
+                                || (p.getTitle() != null && p.getTitle().toLowerCase().contains(col)))
+                        .collect(java.util.stream.Collectors.toList());
+                if (!colorMatches.isEmpty()) {
+                    filtered = colorMatches;
+                } else {
+                    StringBuilder sb = new StringBuilder("We currently do not have " + capitalize(detectedColor) + " " + capitalize(matchedNoun) + "s in stock.\n\n");
+                    sb.append("🌸 However, we have lovely ").append(capitalize(matchedNoun)).append(" options in other colors:\n\n");
+                    int count = 0;
+                    for (Product p : nounProducts) {
+                        if (count++ >= 4) break;
+                        sb.append("• ").append(p.getTitle()).append(" – ₹").append(p.getSellingPrice());
+                        if (p.getColor() != null) {
+                            sb.append(" (Color: ").append(p.getColor()).append(")");
+                        }
+                        sb.append("\n");
+                    }
+                    sb.append("\n🛍️ Browse our store collection to view all available styles!");
+                    ApiResponse res = new ApiResponse();
+                    res.setMessage(sb.toString().trim());
+                    return res;
+                }
+            }
+
+            if (detectedFabric != null) {
+                final String fab = detectedFabric;
+                List<Product> fabricMatches = filtered.stream()
+                        .filter(p -> (p.getTitle() != null && p.getTitle().toLowerCase().contains(fab))
+                                || (p.getDescription() != null && p.getDescription().toLowerCase().contains(fab)))
+                        .collect(java.util.stream.Collectors.toList());
+                if (!fabricMatches.isEmpty()) {
+                    filtered = fabricMatches;
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+            String descriptor = "";
+            if (detectedColor != null) descriptor += capitalize(detectedColor) + " ";
+            if (detectedFabric != null) descriptor += capitalize(detectedFabric) + " ";
+            descriptor += capitalize(matchedNoun) + "s";
+
+            sb.append("✨ Yes! We have authentic ").append(descriptor).append(" available in stock:\n\n");
             int count = 0;
-            for (Product p : matchedProducts) {
+            for (Product p : filtered) {
                 if (count++ >= 4) break;
-                sb.append("• ").append(p.getTitle()).append(" - ₹").append(p.getSellingPrice());
+                sb.append("• ").append(p.getTitle()).append(" – ₹").append(p.getSellingPrice());
                 if (p.getQuantity() > 0) {
                     sb.append(" (In Stock)");
                 }
                 sb.append("\n");
             }
-            sb.append("\nYou can browse them directly in our store collection!");
+            sb.append("\n🛍️ You can explore and order them directly from our store collection!");
             ApiResponse res = new ApiResponse();
             res.setMessage(sb.toString().trim());
             return res;
         }
 
-        // 5. Greeting
-        if (lowerPrompt.contains("hello") || lowerPrompt.contains("hi") || lowerPrompt.contains("hey")) {
+        // 6. Generic Product Keyword Search
+        String cleaned = lowerPrompt
+                .replaceAll("\\b(is|are|available|or|not|in|stock|do|you|have|show|me|find|the|a|an|please|can|i|get|want|to|buy|price|of|what|any)\\b", " ")
+                .replaceAll("[^a-zA-Z0-9 ]", " ")
+                .trim()
+                .replaceAll(" +", " ");
+
+        List<Product> genericMatches = null;
+        if (!cleaned.isEmpty()) {
+            genericMatches = productRepository.searchProduct(cleaned);
+        }
+
+        if (genericMatches != null && !genericMatches.isEmpty()) {
+            StringBuilder sb = new StringBuilder("✨ Here are available products matching your search:\n\n");
+            int count = 0;
+            for (Product p : genericMatches) {
+                if (count++ >= 4) break;
+                sb.append("• ").append(p.getTitle()).append(" – ₹").append(p.getSellingPrice()).append("\n");
+            }
+            sb.append("\n🛍️ You can view them in the catalog or search by category.");
             ApiResponse res = new ApiResponse();
-            res.setMessage("Hello! Welcome to Noir Bazar. I can help you check product availability, sarees, dresses, cart details, and order tracking. How can I help you today?");
+            res.setMessage(sb.toString().trim());
             return res;
         }
 
-        // 6. Helpful default response
+        // 7. Helpful fallback
         ApiResponse res = new ApiResponse();
-        res.setMessage("Currently, we couldn't find an exact match for \"" + prompt.trim() + "\", but we have 40+ exquisite sarees, ethnic wear, and deals in our store! Browse our Women's section or ask for specific styles.");
+        res.setMessage("I couldn't find an exact match for \"" + prompt.trim() + "\".\n\n"
+                + "💡 Try asking:\n"
+                + "• \"silk saree\" or \"purple saree\"\n"
+                + "• \"floral kurta set\"\n"
+                + "• \"men jeans\" or \"jackets\"\n"
+                + "• \"laptops\" or \"speakers\"\n"
+                + "• \"what is in my cart\" or \"order status\"");
         return res;
     }
 }
